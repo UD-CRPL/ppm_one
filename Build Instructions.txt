@@ -1,0 +1,28 @@
+To build ppm_one, you have to build the common library and the lmmin library first.
+
+I recommend that you use cmake to install. There are also build scripts called "build.sh"
+which you may use to build with the code as well.
+
+1.  cd into the build_common directory ($ cd build_common)
+2.  Edit the build.sh script to use whichever compiler you want. Right now, we are using
+    the PGI compiler for its GPU support. If you want to use the PGI compiler with GPUs,
+    you may have to change the value of "-ta=tesla:cc70" to represent which GPU you are
+    using. You may also use "-ta=multicore" to compile for multicore CPU.
+3.  Run the build.sh script. ($ . ./build.sh)
+4.  Run "make install". ($ make install)
+5.  cd back and into the build_lmmin directory ($ cd ../build_lmmin)
+6.  Again, you may want to edit the build.sh file to fit your needs.
+7.  Run the build.sh script. ($ . ./build.sh)
+8.  Run "make install". ($ make install)
+9.  cd back to the main directory ($ cd ..)
+10. Edit the final build.sh script.
+11. Run "make install". ($ make install)
+
+The executable will be generated in the ppm directory. ($ cd ppm)
+
+ppm_one can be run with a few different options. The only one that is accelerated
+is the standard options.
+
+An example of running the code:
+$ ./ppm_stable -pdb example.pdb
+

@@ -1,0 +1,1 @@
+/opt/pgi/linux86-64/18.4/bin/pgc++   -Minfo=accel -std=c++11 -O3 -mp   CMakeFiles/compare_cs.dir/main.cpp.o  -o compare_cs  /home/efwright/myprogram/lib/libcommon.a /home/efwright/myprogram/lib/liblmmin.a 
