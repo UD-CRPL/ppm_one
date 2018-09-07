@@ -22,11 +22,11 @@ using namespace ldw_math;
 //			return 0;
 //	}
 
-#pragma acc routine seq
-	double my_dot(double x[3],double y[3])
-	{
-			return x[0]*y[0]+x[1]*y[1]+x[2]*y[2];
-	}
+//#pragma acc routine seq
+//	double my_dot(double x[3],double y[3])
+//	{
+//			return x[0]*y[0]+x[1]*y[1]+x[2]*y[2];
+//	}
 
 #pragma acc routine seq
 	double my_mysign(double a,double b)
@@ -457,7 +457,8 @@ int my_dsvd(double a[6][3], int m, int n, double w[3], double v[3][3])
 					d=1/(leg1*leg1*leg1)+1/(leg3*leg3*leg3);
 					cross(t4,t2,t1);
 					//my_cross(t4,t2,t1);
-					tt=my_dot(t4,ori);
+					tt=dot(t4,ori);
+					//tt=my_dot(t4,ori);
 
 					for(j=0;j<3;j++)
 					{
@@ -487,7 +488,8 @@ int my_dsvd(double a[6][3], int m, int n, double w[3], double v[3][3])
 					d=1/(leg1*leg1*leg1)+1/(leg3*leg3*leg3);
 					cross(t4,t2,t1);
 					//my_cross(t4,t2,t1);
-					tt=my_dot(t4,ori);
+					tt=dot(t4,ori);
+					//tt=my_dot(t4,ori);
 
 					for(j=0;j<3;j++)
 					{
@@ -515,7 +517,8 @@ int my_dsvd(double a[6][3], int m, int n, double w[3], double v[3][3])
 	        
 			b[0]=x3-x2;b[1]=y3-y2;b[2]=z3-z2;
 			c[0]=x4-x3;c[1]=y4-y3;c[2]=z4-z3;
-			angle=my_dot(b,c)/my_veclength(b)/my_veclength(c);
+			angle=dot(b,c)/my_veclength(b)/my_veclength(c);
+			//angle=my_dot(b,c)/my_veclength(b)/my_veclength(c);
 			if(angle>1.0) angle=1.0;
 			if(angle<-1.0) angle=-1.0;
 	/*        angle=sqrt(1-angle*angle);*/
@@ -1579,7 +1582,8 @@ void CTraj::getring_acc(ring_group *index, int index_size, nh_group *select, int
 
            		cross(t3_p,t1_p,t2_p);
            		//my_cross(t3_p,t1_p,t2_p);
-            		if(my_dot(t3_p,ori_p)<0)
+            		if(dot(t3_p,ori_p)<0)
+					//if(my_dot(t3_p,ori_p)<0)
             		{
 	           		/*#pragma acc loop seq
 				for(jj=0;jj<3;jj++)
@@ -1875,7 +1879,8 @@ void CTraj::getring_acc(ring_group *index, int index_size, proton *select, int s
 
            		cross(t3_p,t1_p,t2_p);
            		//my_cross(t3_p,t1_p,t2_p);
-            		if(my_dot(t3_p,ori_p)<0)
+            		if(dot(t3_p,ori_p)<0)
+					//if(my_dot(t3_p,ori_p)<0)
             		{
 	           		/*#pragma acc loop seq
 				for(jj=0;jj<3;jj++)
@@ -2445,7 +2450,8 @@ void CTraj::getani_acc(ani_group *index, int index_size, proton *select, int sel
 
 					length_pp=v1_pp[0]*v1_pp[0]+v1_pp[1]*v1_pp[1]+v1_pp[2]*v1_pp[2];
 
-					cosa_pp=my_dot(v1_pp,ori_p);
+					cosa_pp=dot(v1_pp,ori_p);
+					//cosa_pp=my_dot(v1_pp,ori_p);
 
 					cosa_pp/=sqrt(ori_p[0]*ori_p[0]+ori_p[1]*ori_p[1]+ori_p[2]*ori_p[2]);
 					cosa_pp/=sqrt(length_pp);					 
@@ -2560,7 +2566,8 @@ void CTraj::getani_acc(ani_group *index, int index_size, proton *select, int sel
 
 					length_pp=v1_pp[0]*v1_pp[0]+v1_pp[1]*v1_pp[1]+v1_pp[2]*v1_pp[2];
 
-					cosa_pp=my_dot(v1_pp,ori_p);
+					cosa_pp=dot(v1_pp,ori_p);
+					//cosa_pp=my_dot(v1_pp,ori_p);
 
 					cosa_pp/=sqrt(ori_p[0]*ori_p[0]+ori_p[1]*ori_p[1]+ori_p[2]*ori_p[2]);
 					cosa_pp/=sqrt(length_pp);					 
@@ -2826,7 +2833,8 @@ void CTraj::getani_acc(ani_group *index, int index_size, nh_group *select, int s
 					v1_pp[1]=center_p[1]-y_arr[i1_pp];
 					v1_pp[2]=center_p[2]-z_arr[i1_pp];
 					length_pp=v1_pp[0]*v1_pp[0]+v1_pp[1]*v1_pp[1]+v1_pp[2]*v1_pp[2];
-					cosa_pp=my_dot(v1_pp,ori_p);
+					cosa_pp=dot(v1_pp,ori_p);
+					//cosa_pp=my_dot(v1_pp,ori_p);
 					cosa_pp/=sqrt(ori_p[0]*ori_p[0]+ori_p[1]*ori_p[1]+ori_p[2]*ori_p[2]);
 					cosa_pp/=sqrt(length_pp);					 
 					e_pp=(1-3*cosa_pp*cosa_pp)/(length_pp*sqrt(length_pp));

@@ -337,6 +337,7 @@ namespace ldw_math
 	double veclength(double x[3]);
 #pragma acc routine seq
 	void cross(double z[3],double x[3],double y[3]);
+#pragma acc routine seq
 	double dot(double x[3],double y[3]);
 
 	double coor_to_angle(double x2,double y2,double z2,double x3,double y3,double z3,double x4,double y4,double z4);
