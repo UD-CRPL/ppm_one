@@ -648,6 +648,7 @@ namespace ldw_math
 			return sqrt(x[0]*x[0]+x[1]*x[1]+x[2]*x[2]);
 	}
 
+#pragma acc routine seq
 	double veclength(double x[3])
 	{
 			return sqrt(x[0]*x[0]+x[1]*x[1]+x[2]*x[2]);
@@ -668,6 +669,7 @@ namespace ldw_math
 			return x[0]*y[0]+x[1]*y[1]+x[2]*y[2];
 	}
 
+#pragma acc routine seq
 	double coor_to_angle(double x2,double y2,double z2,double x3,double y3,double z3,double x4,double y4,double z4)
 	{
 			double angle;
@@ -760,6 +762,7 @@ namespace ldw_math
 	}
 
 
+#pragma acc routine seq
 	double area( double a, double b, double c )
 	{
 	  double s;
@@ -1800,6 +1803,7 @@ namespace ldw_math
 		return;
 	}
 
+#pragma acc routine seq
 	void project(double ori[3], double p1[3], double p2[3])
 	{
 			double d;
@@ -1813,6 +1817,7 @@ namespace ldw_math
 			return;
 	}
 
+#pragma acc routine seq
 	double effect(double x[6][3], int m, double ori[3], double p1[3])
 	{
 			int i,j;

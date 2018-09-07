@@ -404,41 +404,41 @@ using namespace ldw_math;
 //			return;
 //	}
 
-#pragma acc routine seq
-	double my_area( double a, double b, double c )
-	{
-	  double s;
-	  double y;
-	  s = (a + b + c)/2;
-	  s =  s * (s - a)*(s - b)*(s - c);
-	  if(s<0)
-		y=0;
-	  else
-		y = sqrt( s );
-	  return y;
-	}
+//#pragma acc routine seq
+//	double my_area( double a, double b, double c )
+//	{
+//	  double s;
+//	  double y;
+//	  s = (a + b + c)/2;
+//	  s =  s * (s - a)*(s - b)*(s - c);
+//	  if(s<0)
+//		y=0;
+//	  else
+//		y = sqrt( s );
+//	  return y;
+//	}
 
-#pragma acc routine seq
-	double my_veclength(double x[3])
-	{
-			return sqrt(x[0]*x[0]+x[1]*x[1]+x[2]*x[2]);
-	}
+//#pragma acc routine seq
+//	double my_veclength(double x[3])
+//	{
+//			return sqrt(x[0]*x[0]+x[1]*x[1]+x[2]*x[2]);
+//	}
 
-#pragma acc routine seq
-	void my_project(double ori[3], double p1[3], double p2[3])
-	{
-			double d;
-			int i;
+//#pragma acc routine seq
+//	void my_project(double ori[3], double p1[3], double p2[3])
+//	{
+//			double d;
+//			int i;
 
-			d=ori[0]*p1[0]+ori[1]*p1[1]+ori[2]*p1[2];
-			for(i=0;i<3;i++)
-			{
-					p2[i]=p1[i]-d*ori[i];
-			}
-			return;
-	}
+//			d=ori[0]*p1[0]+ori[1]*p1[1]+ori[2]*p1[2];
+//			for(i=0;i<3;i++)
+//			{
+//					p2[i]=p1[i]-d*ori[i];
+//			}
+//			return;
+//	}
 
-#pragma acc routine seq
+/*#pragma acc routine seq
 	double my_effect(double x[6][3], int m, double ori[3], double p1[3])
 	{
 			int i,j;
@@ -452,7 +452,8 @@ using namespace ldw_math;
 			double p2[3];
 
 			ss=0;
-			my_project(ori,p1,p2);
+			project(ori,p1,p2);
+			//my_project(ori,p1,p2);
 			for(i=0;i<m-1;i++)
 			{
 					for(j=0;j<3;j++)
@@ -461,8 +462,10 @@ using namespace ldw_math;
 							t2[j]=x[i+1][j]-x[i][j];
 							t3[j]=x[i+1][j]-p1[j];
 					}
-					leg1=my_veclength(t1);
-					leg3=my_veclength(t3);
+					leg1=veclength(t1);
+					leg3=veclength(t3);
+					//leg1=my_veclength(t1);
+					//leg3=my_veclength(t3);
 					d=1/(leg1*leg1*leg1)+1/(leg3*leg3*leg3);
 					cross(t4,t2,t1);
 					//my_cross(t4,t2,t1);
@@ -474,10 +477,14 @@ using namespace ldw_math;
 							t1[j]=x[i][j]-p2[j];
 							t3[j]=x[i+1][j]-p2[j];
 					}
-					leg1=my_veclength(t1);
-					leg2=my_veclength(t2);
-					leg3=my_veclength(t3);
-					s=my_area(leg1,leg2,leg3);
+					leg1=veclength(t1);
+					leg2=veclength(t2);
+					leg3=veclength(t3);
+					//leg1=my_veclength(t1);
+					//leg2=my_veclength(t2);
+					//leg3=my_veclength(t3);
+					s=area(leg1,leg2,leg3);
+					//s=my_area(leg1,leg2,leg3);
 					if(tt<0)
 							s=-s;
 					ss+=s*d;
@@ -492,8 +499,10 @@ using namespace ldw_math;
 							t2[j]=x[0][j]-x[i][j];
 							t3[j]=x[0][j]-p1[j];
 					}
-					leg1=my_veclength(t1);
-					leg3=my_veclength(t3);
+					leg1=veclength(t1);
+					leg3=veclength(t3);
+					//leg1=my_veclength(t1);
+					//leg3=my_veclength(t3);
 					d=1/(leg1*leg1*leg1)+1/(leg3*leg3*leg3);
 					cross(t4,t2,t1);
 					//my_cross(t4,t2,t1);
@@ -505,19 +514,23 @@ using namespace ldw_math;
 							t1[j]=x[i][j]-p2[j];
 							t3[j]=x[0][j]-p2[j];
 					}
-					leg1=my_veclength(t1);
-					leg2=my_veclength(t2);
-					leg3=my_veclength(t3);
-					s=my_area(leg1,leg2,leg3);
+					leg1=veclength(t1);
+					leg2=veclength(t2);
+					leg3=veclength(t3);
+					//leg1=my_veclength(t1);
+					//leg2=my_veclength(t2);
+					//leg3=my_veclength(t3);
+					s=area(leg1,leg2,leg3);
+					//s=my_area(leg1,leg2,leg3);
 					if(tt<0)
 							s=-s;
 					ss+=s*d;
 			}
 
 			return ss;
-	}
+	}*/
 
-	#pragma acc routine seq
+/*	#pragma acc routine seq
 	double my_coor_to_angle(double x2,double y2,double z2,double x3,double y3,double z3,double x4,double y4,double z4)
 	{
 			double angle;
@@ -526,13 +539,14 @@ using namespace ldw_math;
 	        
 			b[0]=x3-x2;b[1]=y3-y2;b[2]=z3-z2;
 			c[0]=x4-x3;c[1]=y4-y3;c[2]=z4-z3;
-			angle=dot(b,c)/my_veclength(b)/my_veclength(c);
+			angle=dot(b,c)/veclength(b)/veclength(c);
+			//angle=dot(b,c)/my_veclength(b)/my_veclength(c);
 			//angle=my_dot(b,c)/my_veclength(b)/my_veclength(c);
 			if(angle>1.0) angle=1.0;
 			if(angle<-1.0) angle=-1.0;
 	/*        angle=sqrt(1-angle*angle);*/
-			return angle;
-	}
+//			return angle;
+//	}
 
 
 
@@ -873,13 +887,16 @@ void CTraj::gethbond_acc(bbhbond_group *hbond, int _hbond_size, ehbond *effect_a
 				u[0]=x_arr[h+base]-x_arr[o+base];
 				u[1]=y_arr[h+base]-y_arr[o+base];
 				u[2]=z_arr[h+base]-z_arr[o+base];
-				d=my_veclength(u);
+				d=veclength(u);
+				//d=my_veclength(u);
 				x2=x_arr[n+base];y2=y_arr[n+base];z2=z_arr[n+base];
 				x3=x_arr[h+base];y3=y_arr[h+base];z3=z_arr[h+base];
 				x4=x_arr[o+base];y4=y_arr[o+base];z4=z_arr[o+base];
 				x5=x_arr[c+base];y5=y_arr[c+base];z5=z_arr[c+base];
-				phi=my_coor_to_angle(x2,y2,z2,x3,y3,z3,x4,y4,z4);
-				psi=my_coor_to_angle(x3,y3,z3,x4,y4,z4,x5,y5,z5);
+				phi=coor_to_angle(x2,y2,z2,x3,y3,z3,x4,y4,z4);
+				psi=coor_to_angle(x3,y3,z3,x4,y4,z4,x5,y5,z5);
+				//phi=my_coor_to_angle(x2,y2,z2,x3,y3,z3,x4,y4,z4);
+				//psi=my_coor_to_angle(x3,y3,z3,x4,y4,z4,x5,y5,z5);
 				if(d<3 && phi>0.5 && psi>0.5)
 				{
 					d=1/(d-1);
@@ -1613,7 +1630,8 @@ void CTraj::getring_acc(ring_group *index, int index_size, nh_group *select, int
 					p1_p[0]=x_arr[base+select[ii].hpos-1]-sum_p[0];
 					p1_p[1]=y_arr[base+select[ii].hpos-1]-sum_p[1];
 					p1_p[2]=z_arr[base+select[ii].hpos-1]-sum_p[2];
-					e_p=my_effect(u_p,m,ori_p,p1_p); 
+					e_p=effect(u_p,m,ori_p,p1_p); 
+					//e_p=my_effect(u_p,m,ori_p,p1_p); 
 					e_p*=10;
 					#pragma acc atomic update
 					ring_effect_arr[ii].x[index[j].x1-1]+=e_p;
@@ -1913,7 +1931,8 @@ void CTraj::getring_acc(ring_group *index, int index_size, proton *select, int s
 					p1_p[0]=x_arr[base+select[ii].hpos[k]-1]-sum_p[0];
 					p1_p[1]=y_arr[base+select[ii].hpos[k]-1]-sum_p[1];
 					p1_p[2]=z_arr[base+select[ii].hpos[k]-1]-sum_p[2];
-					e_pp+=my_effect(u_p,m,ori_p,p1_p); 
+					e_pp+=effect(u_p,m,ori_p,p1_p); 
+					//e_pp+=my_effect(u_p,m,ori_p,p1_p); 
 				}
 				e_pp*=(10*3/select[ii].nh);
 				#pragma acc atomic update
