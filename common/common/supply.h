@@ -335,6 +335,7 @@ namespace ldw_math
 	double gaussrand(void);
 	vector<int> cluster_pick2(int,vector<double>, vector<double>, double);
 	double veclength(double x[3]);
+#pragma acc routine seq
 	void cross(double z[3],double x[3],double y[3]);
 	double dot(double x[3],double y[3]);
 

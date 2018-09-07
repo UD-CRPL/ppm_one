@@ -13,14 +13,14 @@ using namespace std;
 #include <openacc.h>
 using namespace ldw_math;
 
-#pragma acc routine seq
-	int my_cross(double z[3],double x[3],double y[3])
-	{
-			z[0]=x[1]*y[2]-x[2]*y[1];
-			z[1]=-x[0]*y[2]+x[2]*y[0];
-			z[2]=x[0]*y[1]-x[1]*y[0];
-			return 0;
-	}
+//#pragma acc routine seq
+//	int my_cross(double z[3],double x[3],double y[3])
+//	{
+//			z[0]=x[1]*y[2]-x[2]*y[1];
+//			z[1]=-x[0]*y[2]+x[2]*y[0];
+//			z[2]=x[0]*y[1]-x[1]*y[0];
+//			return 0;
+//	}
 
 #pragma acc routine seq
 	double my_dot(double x[3],double y[3])
@@ -455,7 +455,8 @@ int my_dsvd(double a[6][3], int m, int n, double w[3], double v[3][3])
 					leg1=my_veclength(t1);
 					leg3=my_veclength(t3);
 					d=1/(leg1*leg1*leg1)+1/(leg3*leg3*leg3);
-					my_cross(t4,t2,t1);
+					cross(t4,t2,t1);
+					//my_cross(t4,t2,t1);
 					tt=my_dot(t4,ori);
 
 					for(j=0;j<3;j++)
@@ -484,7 +485,8 @@ int my_dsvd(double a[6][3], int m, int n, double w[3], double v[3][3])
 					leg1=my_veclength(t1);
 					leg3=my_veclength(t3);
 					d=1/(leg1*leg1*leg1)+1/(leg3*leg3*leg3);
-					my_cross(t4,t2,t1);
+					cross(t4,t2,t1);
+					//my_cross(t4,t2,t1);
 					tt=my_dot(t4,ori);
 
 					for(j=0;j<3;j++)
@@ -1575,7 +1577,8 @@ void CTraj::getring_acc(ring_group *index, int index_size, nh_group *select, int
 			t2_p[1] = u_p[2][1] - u_p[1][1];
 			t2_p[2] = u_p[2][2] - u_p[1][2];
 
-           		my_cross(t3_p,t1_p,t2_p);
+           		cross(t3_p,t1_p,t2_p);
+           		//my_cross(t3_p,t1_p,t2_p);
             		if(my_dot(t3_p,ori_p)<0)
             		{
 	           		/*#pragma acc loop seq
@@ -1870,7 +1873,8 @@ void CTraj::getring_acc(ring_group *index, int index_size, proton *select, int s
 			t2_p[1] = u_p[2][1] - u_p[1][1];
 			t2_p[2] = u_p[2][2] - u_p[1][2];
 
-           		my_cross(t3_p,t1_p,t2_p);
+           		cross(t3_p,t1_p,t2_p);
+           		//my_cross(t3_p,t1_p,t2_p);
             		if(my_dot(t3_p,ori_p)<0)
             		{
 	           		/*#pragma acc loop seq
@@ -2416,7 +2420,8 @@ void CTraj::getani_acc(ani_group *index, int index_size, proton *select, int sel
 			v2_p[1]=y_arr[i3]-y_arr[i2];
 			v2_p[2]=z_arr[i3]-z_arr[i2];
 
-			my_cross(ori_p,v1_p,v2_p);
+			cross(ori_p,v1_p,v2_p);
+			//my_cross(ori_p,v1_p,v2_p);
 
 			#pragma acc loop vector
 			for(jj=0;jj<select_size;jj++) 
@@ -2530,7 +2535,8 @@ void CTraj::getani_acc(ani_group *index, int index_size, proton *select, int sel
 			v2_p[1]=y_arr[i3]-y_arr[i2];
 			v2_p[2]=z_arr[i3]-z_arr[i2];
 
-			my_cross(ori_p,v1_p,v2_p);
+			cross(ori_p,v1_p,v2_p);
+			//my_cross(ori_p,v1_p,v2_p);
 
 			#pragma acc loop vector
 			for(jj=0;jj<select_size;jj++) 
@@ -2802,7 +2808,8 @@ void CTraj::getani_acc(ani_group *index, int index_size, nh_group *select, int s
 			v2_p[1]=y_arr[i3]-y_arr[i2];
 			v2_p[2]=z_arr[i3]-z_arr[i2];
 
-			my_cross(ori_p,v1_p,v2_p);
+			cross(ori_p,v1_p,v2_p);
+			//my_cross(ori_p,v1_p,v2_p);
 
 			#pragma acc loop independent vector
 			for(jj=0;jj<select_size;jj++)

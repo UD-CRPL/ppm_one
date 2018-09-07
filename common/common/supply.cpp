@@ -653,6 +653,7 @@ namespace ldw_math
 			return sqrt(x[0]*x[0]+x[1]*x[1]+x[2]*x[2]);
 	}
 
+#pragma acc routine seq
 	void cross(double z[3],double x[3],double y[3])
 	{
 			z[0]=x[1]*y[2]-x[2]*y[1];
