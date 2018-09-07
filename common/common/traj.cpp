@@ -1574,7 +1574,7 @@ void CTraj::getring_acc(ring_group *index, int index_size, nh_group *select, int
 			
 
 			//my_ring(u_p,m,ori_p);
-			ring(u_p,m,ori_p);
+			ring_acc(u_p,m,ori_p);
 
            		/*#pragma acc loop seq
 			for(jj=0;jj<3;jj++)
@@ -1868,7 +1868,7 @@ void CTraj::getring_acc(ring_group *index, int index_size, proton *select, int s
 			
 
 			//my_ring(u_p,m,ori_p);
-			ring(u_p,m,ori_p);
+			ring_acc(u_p,m,ori_p);
 
            		/*#pragma acc loop seq
 			for(jj=0;jj<3;jj++)
