@@ -1538,13 +1538,11 @@ void CMainbody::predict_bb_static_ann()
 
 #pragma acc enter data create(hbond_effect_arr[0:hbond_effect_size], \
 ani_effect_arr[0:bbnh_size], ring_effect_arr[0:bbnh_size], ani_effect_ha_arr[0:bb_size],  \
-ring_effect_ha_arr[0:bb_size], results[0:results_size])          \
-copyout(predictions[0:(index_size-2)*6])                                                  \
+ring_effect_ha_arr[0:bb_size], results[0:results_size], predictions[0:(index_size-2)*6])                                                  \
 copyin(ha_protons_new[0:bb_size], index_arr[0:index_size], c2_arr[0:c2_size], blosum[0:400], v_oln[0:v_size], dihe[0:dihe_size],      \
-num_arr[0:num_size], v_pos[0:v_size]) present(bb_arr[0:bb_size], bbnh_arr[0:bbnh_size],   \
-hbond_arr[0:hbond_size], anistropy_new[0:anistropy_size])
+num_arr[0:num_size], v_pos[0:v_size])
 
-	#pragma acc parallel loop
+	#pragma acc parallel loop present(hbond_effect_arr[0:hbond_effect_size])
 	for( i=0; i<hbond_effect_size; i++ ) {
 		hbond_effect_arr[i].n_length = 0;
 		hbond_effect_arr[i].c_length = 0;
@@ -1554,7 +1552,7 @@ hbond_arr[0:hbond_size], anistropy_new[0:anistropy_size])
 		hbond_effect_arr[i].c_psi = 0;
 	}
 
-	#pragma acc parallel loop
+	#pragma acc parallel loop present(ani_effect_arr[0:bbnh_size], ring_effect_arr[0:bbnh_size])
 	for( i = 0; i < bbnh_size; i++ ) {
 		ani_effect_arr[i].x[0] = 0;
 		ani_effect_arr[i].x[1] = 0;
@@ -1567,7 +1565,7 @@ hbond_arr[0:hbond_size], anistropy_new[0:anistropy_size])
 		ring_effect_arr[i].x[4] = 0;
 	}
 
-	#pragma acc parallel loop
+	#pragma acc parallel loop present(ani_effect_ha_arr[0:bb_size], ring_effect_ha_arr[0:bb_size])
 	for( i = 0; i < bb_size; i++ ) {
 		ani_effect_ha_arr[i].x[0] = 0;
 		ani_effect_ha_arr[i].x[1] = 0;
@@ -1587,7 +1585,7 @@ hbond_arr[0:hbond_size], anistropy_new[0:anistropy_size])
 	traj->getring_acc(ring_index_new, ring_index_size, ha_protons_new, bb_size, ring_effect_ha_arr, bb_size);
 	traj->get_all_contacts(bb_arr,bb_size,index_arr,index_size,c2_arr,c2_size,results,results_size);
 
-#pragma acc parallel
+#pragma acc parallel default(present)
 {
 	#pragma acc loop independent gang private(code,code_pre,code_fol,pos,id,pre_ca,pre_cb,pre_co,pre_n,pre_h,pre_ha)
 	for(i=0+1;i<index_size-1;i++)
@@ -1991,8 +1989,8 @@ hbond_arr[0:hbond_size], anistropy_new[0:anistropy_size])
 #pragma acc exit data delete(hbond_effect_arr, \
 ani_effect_arr, ring_effect_arr, ani_effect_ha_arr,  \
 ring_effect_ha_arr, results, ha_protons_new, index_arr, \
-c2_arr, blosum, v_oln, dihe, num_arr, v_pos)
-#pramga acc exit data copyout(predictions[0:(index_size-2)*6])                                                  \
+c2_arr, blosum, v_oln, dihe, num_arr, v_pos) \
+copyout(predictions[0:(index_size-2)*6])
 
 
 	for(i=1; i<index_size-1; i++){
