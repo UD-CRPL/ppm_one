@@ -297,32 +297,16 @@ void CTraj::gethbond_acc(bbhbond_group *hbond, int _hbond_size, ehbond *effect_a
 	int base;
 	int nid,cid;
 	int n,h,c,o;
-	//double u[3];
+	double u[3];
 	double x2,x3,x4,x5,y2,y3,y4,y5,z2,z3,z4,z5;
 	double d,phi,psi;
 
-	//effect->resize(nres);
-	//ehbond *effect_arr = effect->data();
-	//int effect_size = effect->size();
-
-	//double *x_arr = x_arr;
-	//double *y_arr = y_arr;
-	//double *z_arr = z_arr;
-	//int x_size = x_size;
-	//int y_size = y_size;
-	//int z_size = z_size;
-
-	//#pragma acc enter data copyin(effect_arr[0:effect_size])
-
 #pragma acc data present(x_arr[0:x_size],y_arr[0:y_size],z_arr[0:z_size],effect_arr[0:effect_size],hbond[0:_hbond_size])
 {
-
-#pragma acc parallel
-{
-#pragma acc loop gang independent
+#pragma acc parallel loop gang independent
 	for(i=0;i<_hbond_size;i++)
 	{
-#pragma acc loop vector independent private(x2,x3,x4,x5,y2,y3,y4,y5,z2,z3,z4,z5,n,h,c,o,nid,cid,k,phi,psi)
+#pragma acc loop vector independent private(x2,x3,x4,x5,y2,y3,y4,y5,z2,z3,z4,z5,n,h,c,o,nid,cid,k,phi,psi,u[0:3],base)
 		for(j=0;j<_hbond_size;j++)
 		{
 			k=j-i;
@@ -340,25 +324,20 @@ void CTraj::gethbond_acc(bbhbond_group *hbond, int _hbond_size, ehbond *effect_a
 			if(h<0 || n<0 || o<0 || c<0)
 				continue;
 
-			double u[3];
-#pragma acc loop seq independent
+#pragma acc loop seq
 			for(k=0;k<nframe;k++)
 			{
-				//cout<<"i,j,k is "<<i<<" "<<j<<" "<<k<<endl;
 				base=k*natom;
 				u[0]=x_arr[h+base]-x_arr[o+base];
 				u[1]=y_arr[h+base]-y_arr[o+base];
 				u[2]=z_arr[h+base]-z_arr[o+base];
 				d=veclength(u);
-				//d=my_veclength(u);
 				x2=x_arr[n+base];y2=y_arr[n+base];z2=z_arr[n+base];
 				x3=x_arr[h+base];y3=y_arr[h+base];z3=z_arr[h+base];
 				x4=x_arr[o+base];y4=y_arr[o+base];z4=z_arr[o+base];
 				x5=x_arr[c+base];y5=y_arr[c+base];z5=z_arr[c+base];
 				phi=coor_to_angle(x2,y2,z2,x3,y3,z3,x4,y4,z4);
 				psi=coor_to_angle(x3,y3,z3,x4,y4,z4,x5,y5,z5);
-				//phi=my_coor_to_angle(x2,y2,z2,x3,y3,z3,x4,y4,z4);
-				//psi=my_coor_to_angle(x3,y3,z3,x4,y4,z4,x5,y5,z5);
 				if(d<3 && phi>0.5 && psi>0.5)
 				{
 					d=1/(d-1);
@@ -388,8 +367,8 @@ void CTraj::gethbond_acc(bbhbond_group *hbond, int _hbond_size, ehbond *effect_a
 			}
 		}
 	}
-} // end parallel region
-#pragma acc parallel loop
+	
+#pragma acc parallel loop independent
 	for(i=0;i<effect_size;i++)
 	{
 		effect_arr[i].n_length/=nframe;
