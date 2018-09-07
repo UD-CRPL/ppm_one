@@ -1303,7 +1303,7 @@ namespace ldw_math
 				}
 				if (its >= 30) {
 					free((void*) rv1);
-					fprintf(stderr, "No convergence after 30,000! iterations \n");
+					//fprintf(stderr, "No convergence after 30,000! iterations \n");
 					return(0);
 				}
 	    
