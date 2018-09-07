@@ -345,14 +345,19 @@ namespace ldw_math
 	double coor_to_dihe(double x1,double y1,double z1,double x2,double y2,double z2,double x3,double y3,double z3,double x4,double y4,double z4);
 
 	void fit(vector<double> x,vector<double> y, vector<double> *z,double *a,double *b,double *rms,double *r);
+#pragma acc routine seq
 	int dsvd(double a[6][3], int m, int n, double *w, double v[3][3]);
 	int dsvd2(double *a, int m, int n, double *w, double v[3][3]);
 	double area( double a, double b, double c );
+#pragma acc routine seq
 	double PYTHAG(double a, double b);
+#pragma acc routine seq
 	double mymax(double a, double b);
+#pragma acc routine seq
 	double mysign(double a,double b);
 	double effect(double x[6][3], int m, double ori[3], double p1[3]);
 	void project(double ori[3], double p1[3], double p2[3]);
+#pragma acc routine seq
 	void ring(double x[6][3], int m, double ori[3]);
 	void regression_plane(double *x, int m, double ori[3]);
 

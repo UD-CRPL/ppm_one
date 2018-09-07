@@ -713,6 +713,7 @@ namespace ldw_math
 			return angle;
 	}
 
+#pragma acc routine seq
 	double mysign(double a,double b)
 	{
 			double result;
@@ -730,6 +731,7 @@ namespace ldw_math
 			return result;
 	}
 
+#pragma acc routine seq
 	double mymax(double a, double b)
 	{
 			double result;
@@ -746,6 +748,7 @@ namespace ldw_math
 
 
 	 
+#pragma acc routine seq
 	double PYTHAG(double a, double b)
 	{
 		double at = fabs(a), bt = fabs(b), ct, result;
@@ -821,6 +824,7 @@ namespace ldw_math
 		*r=stz/sqrt(stx*sty);	
 	}
 
+#pragma acc routine seq
 	int dsvd(double a[6][3], int m, int n, double *w, double v[3][3])
 	{
 		int flag, i, its, j, jj, k, l, nm;
@@ -1092,6 +1096,8 @@ namespace ldw_math
 		return(1);
 	}
 
+	
+#pragma acc routine seq
 	void ring(double x[6][3], int m, double ori[3])
 	{
 			int i,j;

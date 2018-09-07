@@ -28,58 +28,58 @@ using namespace ldw_math;
 //			return x[0]*y[0]+x[1]*y[1]+x[2]*y[2];
 //	}
 
-#pragma acc routine seq
-	double my_mysign(double a,double b)
-	{
-			double result;
+//#pragma acc routine seq
+//	double my_mysign(double a,double b)
+//	{
+//			double result;
 
-			a=fabs(a);
-			if(b>=0)
-			{
-					result=a;
-			}
-			else
-			{
-					result=-a;
-			}
+//			a=fabs(a);
+//			if(b>=0)
+//			{
+//					result=a;
+//			}
+//			else
+//			{
+//					result=-a;
+//			}
 
-			return result;
-	}
+//			return result;
+//	}
 
-#pragma acc routine seq
-	double my_mymax(double a, double b)
-	{
-			double result;
-			if(a>b)
-			{
-					result=a;
-			}
-			else
-			{
-					result=b;
-			}
-			return result;
-	}
+//#pragma acc routine seq
+//	double my_mymax(double a, double b)
+//	{
+//			double result;
+//			if(a>b)
+//			{
+//					result=a;
+//			}
+//			else
+//			{
+//					result=b;
+//			}
+//			return result;
+//	}
 
-#pragma acc routine seq 
-	double my_PYTHAG(double a, double b)
-	{
-		double at = fabs(a), bt = fabs(b), ct, result;
+//#pragma acc routine seq 
+//	double my_PYTHAG(double a, double b)
+//	{
+//		double at = fabs(a), bt = fabs(b), ct, result;
 
-		if (at > bt)       { ct = bt / at; result = at * sqrt(1.0 + ct * ct); }
-		else if (bt > 0.0) { ct = at / bt; result = bt * sqrt(1.0 + ct * ct); }
-		else result = 0.0;
-		return(result);
-	}
+//		if (at > bt)       { ct = bt / at; result = at * sqrt(1.0 + ct * ct); }
+//		else if (bt > 0.0) { ct = at / bt; result = bt * sqrt(1.0 + ct * ct); }
+//		else result = 0.0;
+//		return(result);
+//	}
 
-#pragma acc routine seq
-int my_dsvd(double a[6][3], int m, int n, double w[3], double v[3][3])
-	{
+//#pragma acc routine seq
+//int my_dsvd(double a[6][3], int m, int n, double w[3], double v[3][3])
+//	{
 
-		int flag, i, its, j, jj, k, l, nm;
-		double c, f, h, s, x, y, z;
-		double anorm = 0.0, g = 0.0, scale = 0.0;
-		double rv1[3];
+//		int flag, i, its, j, jj, k, l, nm;
+//		double c, f, h, s, x, y, z;
+//		double anorm = 0.0, g = 0.0, scale = 0.0;
+//		double rv1[3];
 	  
 		//if (m < n) 
 		//{
@@ -91,174 +91,178 @@ int my_dsvd(double a[6][3], int m, int n, double w[3], double v[3][3])
 		//rv1 = new double[n];
 
 	
-		for (i = 0; i < n; i++) 
-		{
+//		for (i = 0; i < n; i++) 
+//		{
 			
-			l = i + 1;
-			rv1[i] = scale * g;
-			g = 0.0;
-			s = 0.0;
-			scale = 0.0;
-			if (i < m) 
-			{
-				for (k = i; k < m; k++) 
-					scale += fabs((double)a[k][i]);
-				if (scale) 
-				{
-					for (k = i; k < m; k++) 
-					{
-						a[k][i] = (double)((double)a[k][i]/scale);
-						s += ((double)a[k][i] * (double)a[k][i]);
-					}
-					f = (double)a[i][i];
+//			l = i + 1;
+//			rv1[i] = scale * g;
+//			g = 0.0;
+//			s = 0.0;
+//			scale = 0.0;
+//			if (i < m) 
+//			{
+//				for (k = i; k < m; k++) 
+//					scale += fabs((double)a[k][i]);
+//				if (scale) 
+//				{
+//					for (k = i; k < m; k++) 
+//					{
+//						a[k][i] = (double)((double)a[k][i]/scale);
+//						s += ((double)a[k][i] * (double)a[k][i]);
+//					}
+//					f = (double)a[i][i];
+//	                
+//					//g = -my_mysign(sqrt(s), f);
+//					g = -mysign(sqrt(s), f);
 	                
-					g = -my_mysign(sqrt(s), f);
-	                
-					h = f * g - s;
-					a[i][i] = (double)(f - g);
-					if (i != n - 1) 
-					{
-						for (j = l; j < n; j++) 
-						{
-							for (s = 0.0, k = i; k < m; k++) 
-								s += ((double)a[k][i] * (double)a[k][j]);
-							f = s / h;
-							for (k = i; k < m; k++) 
-								a[k][j] += (double)(f * (double)a[k][i]);
-						}
-					}
-					for (k = i; k < m; k++) 
-						a[k][i] = (double)((double)a[k][i]*scale);
-				}
-			}
-			w[i] = (double)(scale * g);
+//					h = f * g - s;
+//					a[i][i] = (double)(f - g);
+//					if (i != n - 1) 
+//					{
+//						for (j = l; j < n; j++) 
+//						{
+//							for (s = 0.0, k = i; k < m; k++) 
+//								s += ((double)a[k][i] * (double)a[k][j]);
+//							f = s / h;
+//							for (k = i; k < m; k++) 
+//								a[k][j] += (double)(f * (double)a[k][i]);
+//						}
+//					}
+//					for (k = i; k < m; k++) 
+//						a[k][i] = (double)((double)a[k][i]*scale);
+//				}
+//			}
+//			w[i] = (double)(scale * g);
 	    
 	
-			g = 0.0;
-			s = 0.0;
-			scale = 0.0;
-			if (i < m && i != n - 1) 
-			{
-				for (k = l; k < n; k++) 
-					scale += fabs((double)a[i][k]);
-				if (scale) 
-				{
-					for (k = l; k < n; k++) 
-					{
-						a[i][k] = (double)((double)a[i][k]/scale);
-						s += ((double)a[i][k] * (double)a[i][k]);
-					}
-					f = (double)a[i][l];
-					g = -my_mysign(sqrt(s), f);
-					h = f * g - s;
-					a[i][l] = (double)(f - g);
-					for (k = l; k < n; k++) 
-						rv1[k] = (double)a[i][k] / h;
-					if (i != m - 1) 
-					{
-						for (j = l; j < m; j++) 
-						{
-							for (s = 0.0, k = l; k < n; k++) 
-								s += ((double)a[j][k] * (double)a[i][k]);
-							for (k = l; k < n; k++) 
-								a[j][k] += (double)(s * rv1[k]);
-						}
-					}
-					for (k = l; k < n; k++) 
-						a[i][k] = (double)((double)a[i][k]*scale);
-				}
-			}
-			anorm = my_mymax(anorm, (fabs((double)w[i]) + fabs(rv1[i])));
+//			g = 0.0;
+//			s = 0.0;
+//			scale = 0.0;
+//			if (i < m && i != n - 1) 
+//			{
+//				for (k = l; k < n; k++) 
+//					scale += fabs((double)a[i][k]);
+//				if (scale) 
+//				{
+//					for (k = l; k < n; k++) 
+//					{
+//						a[i][k] = (double)((double)a[i][k]/scale);
+//						s += ((double)a[i][k] * (double)a[i][k]);
+//					}
+//					f = (double)a[i][l];
+//					//g = -my_mysign(sqrt(s), f);
+//					g = -mysign(sqrt(s), f);
+//					h = f * g - s;
+//					a[i][l] = (double)(f - g);
+//					for (k = l; k < n; k++) 
+//						rv1[k] = (double)a[i][k] / h;
+//					if (i != m - 1) 
+//					{
+//						for (j = l; j < m; j++) 
+//						{
+//							for (s = 0.0, k = l; k < n; k++) 
+//								s += ((double)a[j][k] * (double)a[i][k]);
+//							for (k = l; k < n; k++) 
+//								a[j][k] += (double)(s * rv1[k]);
+//						}
+//					}
+//					for (k = l; k < n; k++) 
+//						a[i][k] = (double)((double)a[i][k]*scale);
+//				}
+//			}
+			//anorm = my_mymax(anorm, (fabs((double)w[i]) + fabs(rv1[i])));
+//			anorm = mymax(anorm, (fabs((double)w[i]) + fabs(rv1[i])));
 
 
-		}
+//		}
 	
 
-		for (i = n - 1; i >= 0; i--) 
-		{
-			if (i < n - 1) 
-			{
-				if (g) 
-				{
-					for (j = l; j < n; j++)
-						v[j][i] = (double)(((double)a[i][j] / (double)a[i][l]) / g);
-						
-					for (j = l; j < n; j++) 
-					{
-						for (s = 0.0, k = l; k < n; k++) 
-							s += ((double)a[i][k] * (double)v[k][j]);
-						for (k = l; k < n; k++) 
-							v[k][j] += (double)(s * (double)v[k][i]);
-					}
-				}
-				for (j = l; j < n; j++) 
-					v[i][j] = v[j][i] = 0.0;
-			}
-			v[i][i] = 1.0;
-			g = rv1[i];
-			l = i;
-		}
+//		for (i = n - 1; i >= 0; i--) 
+//		{
+//			if (i < n - 1) 
+//			{
+//				if (g) 
+//				{
+//					for (j = l; j < n; j++)
+//						v[j][i] = (double)(((double)a[i][j] / (double)a[i][l]) / g);
+//						
+//					for (j = l; j < n; j++) 
+//					{
+//						for (s = 0.0, k = l; k < n; k++) 
+//							s += ((double)a[i][k] * (double)v[k][j]);
+//						for (k = l; k < n; k++) 
+//							v[k][j] += (double)(s * (double)v[k][i]);
+//					}
+//				}
+//				for (j = l; j < n; j++) 
+//					v[i][j] = v[j][i] = 0.0;
+//			}
+//			v[i][i] = 1.0;
+//			g = rv1[i];
+//			l = i;
+//		}
 
-		for (i = n - 1; i >= 0; i--) 
-		{
-			l = i + 1;
-			g = (double)w[i];
-			if (i < n - 1) 
-				for (j = l; j < n; j++) 
-					a[i][j] = 0.0;
-			if (g) 
-			{
-				g = 1.0 / g;
-				if (i != n - 1) 
-				{
-					for (j = l; j < n; j++) 
-					{
-						for (s = 0.0, k = l; k < m; k++) 
-							s += ((double)a[k][i] * (double)a[k][j]);
-						f = (s / (double)a[i][i]) * g;
-						for (k = i; k < m; k++) 
-							a[k][j] += (double)(f * (double)a[k][i]);
-					}
-				}
-				for (j = i; j < m; j++) 
-					a[j][i] = (double)((double)a[j][i]*g);
-			}
-			else 
-			{
-				for (j = i; j < m; j++) 
-					a[j][i] = 0.0;
-			}
-			++a[i][i];
-		}
+//		for (i = n - 1; i >= 0; i--) 
+//		{
+//			l = i + 1;
+//			g = (double)w[i];
+//			if (i < n - 1) 
+//				for (j = l; j < n; j++) 
+//					a[i][j] = 0.0;
+//			if (g) 
+//			{
+//				g = 1.0 / g;
+//				if (i != n - 1) 
+//				{
+//					for (j = l; j < n; j++) 
+//					{
+//						for (s = 0.0, k = l; k < m; k++) 
+//							s += ((double)a[k][i] * (double)a[k][j]);
+//						f = (s / (double)a[i][i]) * g;
+//						for (k = i; k < m; k++) 
+//							a[k][j] += (double)(f * (double)a[k][i]);
+//					}
+//				}
+//				for (j = i; j < m; j++) 
+//					a[j][i] = (double)((double)a[j][i]*g);
+//			}
+//			else 
+//			{
+//				for (j = i; j < m; j++) 
+//					a[j][i] = 0.0;
+//			}
+//			++a[i][i];
+//		}
 
 
-		for (k = n - 1; k >= 0; k--) 
-		{                             
-			for (its = 0; its < 30; its++) 
-			{                        
-				flag = 1;
-				for (l = k; l >= 0; l--) 
-				{                 
-					nm = l - 1;
-					if (fabs(rv1[l]) + anorm == anorm) 
-					{
-						flag = 0;
-						break;
-					}
-					if (fabs((double)w[nm]) + anorm == anorm) 
-						break;
-				}
-				if (flag) 
-				{
-					c = 0.0;
-					s = 1.0;
-					for (i = l; i <= k; i++) 
-					{
-						f = s * rv1[i];
-						if (fabs(f) + anorm != anorm) 
-						{
+//		for (k = n - 1; k >= 0; k--) 
+//		{                             
+//			for (its = 0; its < 30; its++) 
+//			{                        
+//				flag = 1;
+//				for (l = k; l >= 0; l--) 
+//				{                 
+//					nm = l - 1;
+//					if (fabs(rv1[l]) + anorm == anorm) 
+//					{
+//						flag = 0;
+//						break;
+//					}
+//					if (fabs((double)w[nm]) + anorm == anorm) 
+//						break;
+//				}
+//				if (flag) 
+//				{
+//					c = 0.0;
+//					s = 1.0;
+//					for (i = l; i <= k; i++) 
+//					{
+//						f = s * rv1[i];
+//						if (fabs(f) + anorm != anorm) 
+/*						{
 							g = (double)w[i];
-							h = my_PYTHAG(f, g);
+							//h = my_PYTHAG(f, g);
+							h = PYTHAG(f, g);
 							w[i] = (double)h; 
 							h = 1.0 / h;
 							c = g * h;
@@ -299,8 +303,10 @@ int my_dsvd(double a[6][3], int m, int n, double w[3], double v[3][3])
 				g = rv1[nm];
 				h = rv1[k];
 				f = ((y - z) * (y + z) + (g - h) * (g + h)) / (2.0 * h * y);
-				g = my_PYTHAG(f, 1.0);
-				f = ((x - z) * (x + z) + h * ((y / (f + my_mysign(g, f))) - h)) / x;
+				//g = my_PYTHAG(f, 1.0);
+				g = PYTHAG(f, 1.0);
+				//f = ((x - z) * (x + z) + h * ((y / (f + my_mysign(g, f))) - h)) / x;
+				f = ((x - z) * (x + z) + h * ((y / (f + mysign(g, f))) - h)) / x;
 	          
 				
 				c = s = 1.0;
@@ -312,7 +318,8 @@ int my_dsvd(double a[6][3], int m, int n, double w[3], double v[3][3])
 					y = (double)w[i];
 					h = s * g;
 					g = c * g;
-					z = my_PYTHAG(f, h);
+					//z = my_PYTHAG(f, h);
+					z = PYTHAG(f, h);
 					rv1[j] = z;
 					c = f / z;
 					s = h / z;
@@ -327,7 +334,8 @@ int my_dsvd(double a[6][3], int m, int n, double w[3], double v[3][3])
 						v[jj][j] = (double)(x * c + z * s);
 						v[jj][i] = (double)(z * c - x * s);
 					}
-					z = my_PYTHAG(f, h);
+					//z = my_PYTHAG(f, h);
+					z = PYTHAG(f, h);
 					w[j] = (double)z;
 					if (z) 
 					{
@@ -358,42 +366,43 @@ int my_dsvd(double a[6][3], int m, int n, double w[3], double v[3][3])
 
 		return 1;
 	}
+*/
+
+//#pragma acc routine seq
+//	void my_ring(double x[6][3], int m, double ori[3])
+//	{
+//			int i,j;
+//			int id;
+//			double w[3];
+//			double v[3][3];
+//			double d;
+//			double xx[6][3];
+
+//			for(i=0;i<m;i++)
+//			for(j=0;j<3;j++)
+//					xx[i][j]=x[i][j];
 
 
-#pragma acc routine seq
-	void my_ring(double x[6][3], int m, double ori[3])
-	{
-			int i,j;
-			int id;
-			double w[3];
-			double v[3][3];
-			double d;
-			double xx[6][3];
+//			dsvd(xx, m, 3, w,v);
+			//my_dsvd(xx, m, 3, w,v);
 
-			for(i=0;i<m;i++)
-			for(j=0;j<3;j++)
-					xx[i][j]=x[i][j];
+//			d=w[0];id=0;
+//			if(w[1]<d)
+//			{
+//					d=w[1];
+//					id=1;
+//			}
+//			if(w[2]<d)
+//			{
+//					d=w[2];
+//					id=2;
+//			}
 
+//			for(i=0;i<3;i++)
+//					ori[i]=v[i][id];
 
-			my_dsvd(xx, m, 3, w,v);
-
-			d=w[0];id=0;
-			if(w[1]<d)
-			{
-					d=w[1];
-					id=1;
-			}
-			if(w[2]<d)
-			{
-					d=w[2];
-					id=2;
-			}
-
-			for(i=0;i<3;i++)
-					ori[i]=v[i][id];
-
-			return;
-	}
+//			return;
+//	}
 
 #pragma acc routine seq
 	double my_area( double a, double b, double c )
@@ -1564,7 +1573,8 @@ void CTraj::getring_acc(ring_group *index, int index_size, nh_group *select, int
 			u_p[5][0] -= sum_p[0]; u_p[5][1] -= sum_p[1]; u_p[5][2] -= sum_p[2];
 			
 
-			my_ring(u_p,m,ori_p);
+			//my_ring(u_p,m,ori_p);
+			ring(u_p,m,ori_p);
 
            		/*#pragma acc loop seq
 			for(jj=0;jj<3;jj++)
@@ -1857,7 +1867,8 @@ void CTraj::getring_acc(ring_group *index, int index_size, proton *select, int s
 			u_p[5][0] -= sum_p[0]; u_p[5][1] -= sum_p[1]; u_p[5][2] -= sum_p[2];
 			
 
-			my_ring(u_p,m,ori_p);
+			//my_ring(u_p,m,ori_p);
+			ring(u_p,m,ori_p);
 
            		/*#pragma acc loop seq
 			for(jj=0;jj<3;jj++)
