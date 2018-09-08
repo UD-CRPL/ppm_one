@@ -1382,7 +1382,7 @@ void CTraj::getring_acc(ring_group *index, int index_size, proton *select, int s
 					e+=effect(u,m,ori,p1); 
 					//e_pp+=my_effect(u_p,m,ori_p,p1_p); 
 				}
-				e_pp*=(10*3/select[ii].nh);
+				e*=(10*3/select[ii].nh);
 				#pragma acc atomic update
 				ring_effect_arr[ii].x[index[j].x1-1]+=e;
 			}
