@@ -1603,7 +1603,7 @@ num_arr[0:num_size], v_pos[0:v_size])
 	for(int q = 0; q < bbnh_size; q++)
 		myfile << ring_effect_arr[q].x[0] << " " << ring_effect_arr[q].x[1] << " "
 				<< ring_effect_arr[q].x[2] << " " << ring_effect_arr[q].x[3] << " "
-				<< ring_effect_arr[q[.x[4] << "\n";
+				<< ring_effect_arr[q].x[4] << "\n";
 	myfile.close();
 	
 	myfile.open("getani2.txt");
@@ -1616,7 +1616,7 @@ num_arr[0:num_size], v_pos[0:v_size])
 	for(int q = 0; q < bb_size; q++)
 		myfile << ring_effect_ha_arr[q].x[0] << " " << ring_effect_ha_arr[q].x[1] << " "
 				<< ring_effect_ha_arr[q].x[2] << " " << ring_effect_ha_arr[q].x[3] << " "
-				<< ring_effect_ha_arr[q[.x[4] << "\n";
+				<< ring_effect_ha_arr[q].x[4] << "\n";
 	myfile.close();
 	
 	myfile.open("getcontact.txt");
