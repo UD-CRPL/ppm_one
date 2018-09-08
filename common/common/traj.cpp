@@ -1998,7 +1998,7 @@ void CTraj::getani_acc(ani_group *index, int index_size, proton *select, int sel
 			v2_p[1]=y_arr[i3]-y_arr[i2];
 			v2_p[2]=z_arr[i3]-z_arr[i2];
 
-			my_cross(ori_p,v1_p,v2_p);
+			cross(ori_p,v1_p,v2_p);
 
 			#pragma acc loop vector
 			for(jj=0;jj<select_size;jj++) 
@@ -2022,7 +2022,7 @@ void CTraj::getani_acc(ani_group *index, int index_size, proton *select, int sel
 
 					length_pp=v1_pp[0]*v1_pp[0]+v1_pp[1]*v1_pp[1]+v1_pp[2]*v1_pp[2];
 
-					cosa_pp=my_dot(v1_pp,ori_p);
+					cosa_pp=dot(v1_pp,ori_p);
 
 					cosa_pp/=sqrt(ori_p[0]*ori_p[0]+ori_p[1]*ori_p[1]+ori_p[2]*ori_p[2]);
 					cosa_pp/=sqrt(length_pp);					 
