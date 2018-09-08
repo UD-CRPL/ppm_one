@@ -1956,7 +1956,7 @@ void CTraj::getani_acc(ani_group *index, int index_size, proton *select, int sel
 	double cosa;
 	double length;
 	double e;
-	double v1[3], v2[3], v3[3];
+	double v1[3], v2[3], v3[3], center[3], ori[3];
 
 #pragma acc data present(index[0:index_size],select[0:select_size], \
 x_arr[0:x_size],y_arr[0:y_size],z_arr[0:z_size], \
