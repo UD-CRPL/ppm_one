@@ -3067,7 +3067,7 @@ void CTraj::get_all_contacts(bb_group *bb, int bb_size, index_two *index, int in
 	// Array containing all coordinates
 	int c1_size = (index_size-2)*3;
 	int *c1 = new int[c1_size];
-#pragma acc enter data create(c1[0:c1_size]
+#pragma acc enter data create(c1[0:c1_size])
 
 	// Avoid copying "this" pointer
 	//double *x_arr_this = x_arr;
