@@ -1586,6 +1586,18 @@ num_arr[0:num_size], v_pos[0:v_size])
 	traj->get_all_contacts(bb_arr,bb_size,index_arr,index_size,c2_arr,c2_size,results,results_size);
 	
 	ofstream myfile;
+
+	myfile.open("bb.txt");
+	for(int q = 0; q < bb_size; q++)
+		myfile << bb_arr[q].capos << " "
+		<< bb_arr[q].cbpos << " "
+		<< bb_arr[q].copos << "\n";
+	myfile.close();
+
+	myfile.open("index.txt");
+	for(int q = 0; q < index_size; q++)
+		myfile << index_arr[q].x1 << " " << index_arr[q].x2 << "\n";
+	myfile.close();
 	
     myfile.open ("gethbond.txt");
 #pragma acc update host(hbond_effect_arr[0:hbond_effect_size])
