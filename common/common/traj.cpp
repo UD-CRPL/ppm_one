@@ -3067,6 +3067,7 @@ void CTraj::get_all_contacts(bb_group *bb, int bb_size, index_two *index, int in
 	// Array containing all coordinates
 	int c1_size = (index_size-2)*3;
 	int *c1 = new int[c1_size];
+#pragma acc enter data create(c1[0:c1_size]
 
 	// Avoid copying "this" pointer
 	//double *x_arr_this = x_arr;
@@ -3076,15 +3077,15 @@ void CTraj::get_all_contacts(bb_group *bb, int bb_size, index_two *index, int in
 	//int y_arr_size_this = y_size;
 	//int z_arr_size_this = z_size;
 	//#pragma acc enter data copyin(results[0:results_size])
-#pragma acc data create(c1[0:c1_size]) present(x_arr[0:x_size],y_arr[0:y_size],z_arr[0:z_size],c2[0:c2_size],results[0:results_size], \
-	bb[0:bb_size], index[0:index_size], this)
+#pragma acc data present(x_arr[0:x_size],y_arr[0:y_size],z_arr[0:z_size],c2[0:c2_size],results[0:results_size], \
+	bb[0:bb_size], index[0:index_size], c1[0:c1_size], this)
 {
 
 
 	// Load up c1 same way as in predict_bb_static_ann
 	//          index0           index1             index(index_size-2)
 	// c1[ {coords at i=1}, {coords at i=2},... {coords at i=index_size-1} ]
-	#pragma acc parallel loop independent
+#pragma acc parallel loop independent
 	for(i=0+1;i<index_size-1;i++)
 	{
 		if(index[i].x1 <= 0)
@@ -3102,7 +3103,8 @@ void CTraj::get_all_contacts(bb_group *bb, int bb_size, index_two *index, int in
 
 	//#pragma acc enter data copyin(c1[0:(index_size-2)*3],c2[0:c2_size],results[0:results_size])
 	//#pragma acc enter data copyin(results[0:results_size])
-	#pragma acc parallel loop independent private(ii1,ii2,ii3,x1,x2,x3,y1,y2,y3,z1,z2,z3)
+#pragma acc parallel loop independent private(contact1, contact2, contact3, ii1, ii2, ii3, x1, y1, z1, \
+x2, y2, z2, x3, y3, z3)
 	for(i=0+1;i<(int)index_size-1;i++)
 	{
 		contact1=0.0; contact2=0.0; contact3=0.0;
@@ -3127,8 +3129,8 @@ void CTraj::get_all_contacts(bb_group *bb, int bb_size, index_two *index, int in
 			ii3--; x3=x_arr[ii3]; y3=y_arr[ii3]; z3=z_arr[ii3];
 		}
 
-		#pragma acc loop independent reduction(+:contact1) reduction(+:contact2) \
-		reduction(+:contact3) private(jj,xx,yy,zz,rr1,rr2,rr3)
+#pragma acc loop independent reduction(+:contact1) reduction(+:contact2) \
+reduction(+:contact3) private(jj,xx,yy,zz,rr1,rr2,rr3)
 		for(j=0;j<c2_size;j++)
 		{
 			jj=c2[j];
@@ -3168,6 +3170,7 @@ void CTraj::get_all_contacts(bb_group *bb, int bb_size, index_two *index, int in
 
 } // end data region
 	//cout << "End get all contacts" << endl;
+#pragma acc exit data delete(c1)
 	delete(c1);
 	cout << "get_all_contacts: " << omp_get_wtime() - st << " seconds" << endl;
 }	
