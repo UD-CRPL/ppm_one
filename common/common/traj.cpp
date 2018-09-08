@@ -934,6 +934,9 @@ void CTraj::getring_acc(ring_group *index, int index_size, nh_group *select, int
 	double st = omp_get_wtime();
 	int i,j,ii,jj,m;
 	int base;
+	int t[6];
+	double t1[3], t2[3], t3[3], u[6][3], sum[3], ori[3];
+	double e, p1[3];
 
 	//double_five *ring_effect_arr = ring_effect->data();
 	//#pragma acc enter data copyin(ring_effect_arr[0:select_size])
@@ -945,21 +948,21 @@ void CTraj::getring_acc(ring_group *index, int index_size, nh_group *select, int
 	int y_size = y_size;
 	int z_size = z_size;*/
 
-	#pragma acc data present(index[0:index_size],select[0:select_size], \
-		x_arr[0:x_size],y_arr[0:y_size],z_arr[0:z_size],ring_effect_arr[0:select_size])
-	{
+#pragma acc data present(index[0:index_size],select[0:select_size], \
+	x_arr[0:x_size],y_arr[0:y_size],z_arr[0:z_size],ring_effect_arr[0:select_size])
+{
 
 	for(i=0;i<nframe;i++)
 	{
 		base=i*natom;  
-		#pragma acc parallel loop independent gang private(i,j,ii,jj,m)
+#pragma acc parallel loop independent gang private(t[0:6],t1[0:3],t2[0:3],t3[0:3],u[0:6][0:3],sum[0:3],ori[0:3],m)
 		for(j=0;j<index_size;j++)
 		{
-			int t_p[6];
-			double t1_p[3],t2_p[3],t3_p[3];
-			double u_p[6][3];
-			double sum_p[3];
-			double ori_p[3];
+			//int t_p[6];
+			//double t1_p[3],t2_p[3],t3_p[3];
+			//double u_p[6][3];
+			//double sum_p[3];
+			//double ori_p[3];
 
 			if(index[j].x1 == 1 || index[j].x1 == 2 || index[j].x1 == 5){
 				m=6;
@@ -967,12 +970,12 @@ void CTraj::getring_acc(ring_group *index, int index_size, nh_group *select, int
 				m=5;
 			}
 
-			t_p[0]=index[j].x2;
-			t_p[1]=index[j].x3;
-			t_p[2]=index[j].x4;
-			t_p[3]=index[j].x5;
-			t_p[4]=index[j].x6;
-			t_p[5]=index[j].x7;
+			t[0]=index[j].x2;
+			t[1]=index[j].x3;
+			t[2]=index[j].x4;
+			t[3]=index[j].x5;
+			t[4]=index[j].x6;
+			t[5]=index[j].x7;
 
            		/*#pragma acc loop seq
             		for(ii=0;ii<m;ii++)
@@ -981,15 +984,15 @@ void CTraj::getring_acc(ring_group *index, int index_size, nh_group *select, int
                 		u_p[ii][1]=y_arr[t_p[ii]+base-1];
                 		u_p[ii][2]=z_arr[t_p[ii]+base-1];
             		}*/
-			u_p[0][0]=x_arr[t_p[0]+base-1]; u_p[0][1]=y_arr[t_p[0]+base-1]; u_p[0][2]=z_arr[t_p[0]+base-1];
-			u_p[1][0]=x_arr[t_p[1]+base-1]; u_p[1][1]=y_arr[t_p[1]+base-1]; u_p[1][2]=z_arr[t_p[1]+base-1];
-			u_p[2][0]=x_arr[t_p[2]+base-1]; u_p[2][1]=y_arr[t_p[2]+base-1]; u_p[2][2]=z_arr[t_p[2]+base-1];
-			u_p[3][0]=x_arr[t_p[3]+base-1]; u_p[3][1]=y_arr[t_p[3]+base-1]; u_p[3][2]=z_arr[t_p[3]+base-1];
-			u_p[4][0]=x_arr[t_p[4]+base-1]; u_p[4][1]=y_arr[t_p[4]+base-1]; u_p[4][2]=z_arr[t_p[4]+base-1];
+			u[0][0]=x_arr[t[0]+base-1]; u[0][1]=y_arr[t[0]+base-1]; u[0][2]=z_arr[t[0]+base-1];
+			u[1][0]=x_arr[t[1]+base-1]; u[1][1]=y_arr[t[1]+base-1]; u[1][2]=z_arr[t[1]+base-1];
+			u[2][0]=x_arr[t[2]+base-1]; u[2][1]=y_arr[t[2]+base-1]; u[2][2]=z_arr[t[2]+base-1];
+			u[3][0]=x_arr[t[3]+base-1]; u[3][1]=y_arr[t[3]+base-1]; u[3][2]=z_arr[t[3]+base-1];
+			u[4][0]=x_arr[t[4]+base-1]; u[4][1]=y_arr[t[4]+base-1]; u[4][2]=z_arr[t[4]+base-1];
 			if(m >= 6) {
-				u_p[5][0]=x_arr[t_p[5]+base-1]; u_p[5][1]=y_arr[t_p[5]+base-1]; u_p[5][2]=z_arr[t_p[5]+base-1];
+				u[5][0]=x_arr[t[5]+base-1]; u[5][1]=y_arr[t[5]+base-1]; u[5][2]=z_arr[t[5]+base-1];
 			} else {
-				u_p[5][0]=0; u_p[5][1]=0; u_p[5][2]=0;
+				u[5][0]=0; u[5][1]=0; u[5][2]=0;
 			}
            
            		/*#pragma acc loop seq
@@ -1007,9 +1010,9 @@ void CTraj::getring_acc(ring_group *index, int index_size, nh_group *select, int
 				}
 			}*/
 
-			sum_p[0] = (u_p[0][0] + u_p[1][0] + u_p[2][0] + u_p[3][0] + u_p[4][0] + u_p[5][0]) / m;
-			sum_p[1] = (u_p[0][1] + u_p[1][1] + u_p[2][1] + u_p[3][1] + u_p[4][1] + u_p[5][1]) / m;
-			sum_p[2] = (u_p[0][2] + u_p[1][2] + u_p[2][2] + u_p[3][2] + u_p[4][2] + u_p[5][2]) / m;
+			sum[0] = (u[0][0] + u[1][0] + u[2][0] + u[3][0] + u[4][0] + u[5][0]) / m;
+			sum[1] = (u[0][1] + u[1][1] + u[2][1] + u[3][1] + u[4][1] + u[5][1]) / m;
+			sum[2] = (u[0][2] + u[1][2] + u[2][2] + u[3][2] + u[4][2] + u[5][2]) / m;
 
            		/*#pragma acc loop seq
 			for(jj=0;jj<3;jj++)
@@ -1023,16 +1026,16 @@ void CTraj::getring_acc(ring_group *index, int index_size, nh_group *select, int
 					u_p[ii][jj]-=sum_p[jj];
 			}*/
 
-			u_p[0][0] -= sum_p[0]; u_p[0][1] -= sum_p[1]; u_p[0][2] -= sum_p[2];
-			u_p[1][0] -= sum_p[0]; u_p[1][1] -= sum_p[1]; u_p[1][2] -= sum_p[2];
-			u_p[2][0] -= sum_p[0]; u_p[2][1] -= sum_p[1]; u_p[2][2] -= sum_p[2];
-			u_p[3][0] -= sum_p[0]; u_p[3][1] -= sum_p[1]; u_p[3][2] -= sum_p[2];
-			u_p[4][0] -= sum_p[0]; u_p[4][1] -= sum_p[1]; u_p[4][2] -= sum_p[2];
-			u_p[5][0] -= sum_p[0]; u_p[5][1] -= sum_p[1]; u_p[5][2] -= sum_p[2];
+			u[0][0] -= sum[0]; u[0][1] -= sum[1]; u[0][2] -= sum[2];
+			u[1][0] -= sum[0]; u[1][1] -= sum[1]; u[1][2] -= sum[2];
+			u[2][0] -= sum[0]; u[2][1] -= sum[1]; u[2][2] -= sum[2];
+			u[3][0] -= sum[0]; u[3][1] -= sum[1]; u[3][2] -= sum[2];
+			u[4][0] -= sum[0]; u[4][1] -= sum[1]; u[4][2] -= sum[2];
+			u[5][0] -= sum[0]; u[5][1] -= sum[1]; u[5][2] -= sum[2];
 			
 
 			//my_ring(u_p,m,ori_p);
-			ring_acc(u_p,m,ori_p);
+			ring_acc(u,m,ori);
 
            		/*#pragma acc loop seq
 			for(jj=0;jj<3;jj++)
@@ -1041,41 +1044,41 @@ void CTraj::getring_acc(ring_group *index, int index_size, nh_group *select, int
 				t2_p[jj]=u_p[2][jj]-u_p[1][jj];
 			}*/
 
-			t1_p[0] = u_p[0][0] - u_p[1][0];
-			t1_p[1] = u_p[0][1] - u_p[1][1];
-			t1_p[2] = u_p[0][2] - u_p[1][2];
-			t2_p[0] = u_p[2][0] - u_p[1][0];
-			t2_p[1] = u_p[2][1] - u_p[1][1];
-			t2_p[2] = u_p[2][2] - u_p[1][2];
+			t1[0] = u[0][0] - u[1][0];
+			t1[1] = u[0][1] - u[1][1];
+			t1[2] = u[0][2] - u[1][2];
+			t2[0] = u[2][0] - u[1][0];
+			t2[1] = u[2][1] - u[1][1];
+			t2[2] = u[2][2] - u[1][2];
 
-           		cross(t3_p,t1_p,t2_p);
+           		cross(t3,t1,t2);
            		//my_cross(t3_p,t1_p,t2_p);
-            		if(dot(t3_p,ori_p)<0)
+            		if(dot(t3,ori)<0)
 					//if(my_dot(t3_p,ori_p)<0)
             		{
 	           		/*#pragma acc loop seq
 				for(jj=0;jj<3;jj++)
 					ori_p[jj]=-ori_p[jj];*/
-				ori_p[0] = -ori_p[0];
-				ori_p[1] = -ori_p[1];
-				ori_p[2] = -ori_p[2];
+				ori[0] = -ori[0];
+				ori[1] = -ori[1];
+				ori[2] = -ori[2];
 			}
 
-			#pragma acc loop vector independent
+			#pragma acc loop vector independent private(e,p1[0:3])
 			for(ii=0;ii<select_size;ii++)
 			{
-				double e_p;
-				double p1_p[3];
+				//double e_p;
+				//double p1_p[3];
 				if(select[ii].hpos>=1)
 				{
-					p1_p[0]=x_arr[base+select[ii].hpos-1]-sum_p[0];
-					p1_p[1]=y_arr[base+select[ii].hpos-1]-sum_p[1];
-					p1_p[2]=z_arr[base+select[ii].hpos-1]-sum_p[2];
-					e_p=effect(u_p,m,ori_p,p1_p); 
+					p1[0]=x_arr[base+select[ii].hpos-1]-sum[0];
+					p1[1]=y_arr[base+select[ii].hpos-1]-sum[1];
+					p1[2]=z_arr[base+select[ii].hpos-1]-sum[2];
+					e=effect(u,m,ori,p1)*10; 
 					//e_p=my_effect(u_p,m,ori_p,p1_p); 
-					e_p*=10;
+					//e*=10;
 					#pragma acc atomic update
-					ring_effect_arr[ii].x[index[j].x1-1]+=e_p;
+					ring_effect_arr[ii].x[index[j].x1-1]+=e;
 				}
 			}
 		}
@@ -1096,7 +1099,7 @@ void CTraj::getring_acc(ring_group *index, int index_size, nh_group *select, int
 		ring_effect_arr[ii].x[4]/=nframe;
 	}
 
-	} // END DATA REGION
+} // END DATA REGION
 
 	cout << "getring(nh group): " << omp_get_wtime() - st << " seconds" << endl;
 	return;
