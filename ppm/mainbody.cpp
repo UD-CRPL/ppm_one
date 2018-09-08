@@ -1584,6 +1584,45 @@ num_arr[0:num_size], v_pos[0:v_size])
 	traj->getani_acc(anistropy_new,anistropy_size,ha_protons_new,bb_size,ani_effect_ha_arr,bb_size);
 	traj->getring_acc(ring_index_new, ring_index_size, ha_protons_new, bb_size, ring_effect_ha_arr, bb_size);
 	traj->get_all_contacts(bb_arr,bb_size,index_arr,index_size,c2_arr,c2_size,results,results_size);
+	
+	ofstream myfile;
+	
+    myfile.open ("gethbond.txt");
+    for(int q = 0; q < hbond_effect_size; q++)
+      myfile << hbond_effect_arr[q].n_length << " " << hbond_effect_arr[q].n_phi << " " << hbond_effect_arr[q].n_psi << " " 
+             << hbond_effect_arr[q].c_length << " " << hbond_effect_arr[q].c_phi << " " << hbond_effect_arr[q].c_psi << "\n";
+    myfile.close();
+	
+	myfile.open("getani1.txt");
+	for(int q = 0; q < bbnh_size; q++)
+		myfile << ani_effect_arr[q].x[0] << " " << ani_effect_arr[q].x[1] << " "
+				<< ani_effect_arr[q].x[2] << " " << ani_effect_arr[q].x[3] << "\n";
+	myfile.close();
+	
+	myfile.open("getring1.txt");
+	for(int q = 0; q < bbnh_size; q++)
+		myfile << ring_effect_arr[q].x[0] << " " << ring_effect_arr[q].x[1] << " "
+				<< ring_effect_arr[q].x[2] << " " << ring_effect_arr[q].x[3] << " "
+				<< ring_effect_arr[q[.x[4] << "\n";
+	myfile.close();
+	
+	myfile.open("getani2.txt");
+	for(int q = 0; q < bb_size; q++)
+		myfile << ani_effect_ha_arr[q].x[0] << " " << ani_effect_ha_arr[q].x[1] << " "
+				<< ani_effect_ha_arr[q].x[2] << " " << ani_effect_ha_arr[q].x[3] << "\n";
+	myfile.close();
+	
+	myfile.open("getring2.txt");
+	for(int q = 0; q < bb_size; q++)
+		myfile << ring_effect_ha_arr[q].x[0] << " " << ring_effect_ha_arr[q].x[1] << " "
+				<< ring_effect_ha_arr[q].x[2] << " " << ring_effect_ha_arr[q].x[3] << " "
+				<< ring_effect_ha_arr[q[.x[4] << "\n";
+	myfile.close();
+	
+	myfile.open("getcontact.txt");
+	for(int q = 0; q < results_size; q++)
+		myfile << results[q] << "\n";
+	myfile.close();
 
 #pragma acc parallel default(present)
 {
