@@ -1954,7 +1954,7 @@ void CTraj::getani_acc(ani_group *index, int index_size, proton *select, int sel
 	double cosa;
 	double length;
 	double e;
-	double v1[3], v2[3], v3[3];
+	double v1[3], v2[3], v3[3], center[3], ori[3];
 
 	//double_four *ani_effect_arr = ani_effect->data();
 	//#pragma acc enter data copyin(ani_effect_arr[0:select_size])
