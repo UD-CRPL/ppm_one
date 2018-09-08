@@ -2016,7 +2016,7 @@ ani_effect_arr[0:select_size])
 
 					length=v3[0]*v3[0]+v3[1]*v3[1]+v3[2]*v3[2];
 
-					cosa=dot(v1,ori);
+					cosa=dot(v3,ori);
 					//cosa_pp=my_dot(v1_pp,ori_p);
 
 					cosa/=sqrt(ori[0]*ori[0]+ori[1]*ori[1]+ori[2]*ori[2]);
