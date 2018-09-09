@@ -1553,7 +1553,7 @@ void CMainbody::predict_bb_static_ann()
 ani_effect_arr[0:bbnh_size], ring_effect_arr[0:bbnh_size], ani_effect_ha_arr[0:bb_size],  \
 ring_effect_ha_arr[0:bb_size], results[0:results_size], predictions[0:(index_size-2)*6])                                                  \
 copyin(ha_protons_new[0:bb_size], index_arr[0:index_size], c2_arr[0:c2_size], blosum[0:400], dihe[0:dihe_size],      \
-num_arr[0:num_size])
+num_arr[0:num_size],this)
 
 	#pragma acc parallel loop present(hbond_effect_arr[0:hbond_effect_size])
 	for( i=0; i<hbond_effect_size; i++ ) {
@@ -1655,7 +1655,8 @@ num_arr[0:num_size])
 		myfile << results[q] << "\n";
 	myfile.close();*/
 
-#pragma acc parallel loop independent gang private(code,code_pre,code_fol,pos,id,pre_ca,pre_cb,pre_co,pre_n,pre_h,pre_ha)
+#pragma acc parallel loop independent gang private(code,code_pre,code_fol,pos,id,pre_ca,pre_cb,pre_co,pre_n,pre_h,pre_ha) \
+default(present)
 	for(i=0+1;i<index_size-1;i++)
 	{
 		double oneline[101];
@@ -2056,7 +2057,7 @@ num_arr[0:num_size])
 #pragma acc exit data delete(hbond_effect_arr, \
 ani_effect_arr, ring_effect_arr, ani_effect_ha_arr,  \
 ring_effect_ha_arr, results, ha_protons_new, index_arr, \
-c2_arr, blosum, v_oln, dihe, num_arr, v_pos) \
+c2_arr, blosum, v_oln, dihe, num_arr, v_pos, this) \
 copyout(predictions[0:(index_size-2)*6])
 
 
