@@ -3059,18 +3059,15 @@ void CTraj::get_all_contacts(bb_group *bb, int bb_size, index_two *index, int in
 	// Variables
 	int i, j;
 	int ii1, ii2, ii3 ,jj;
-	float contact1, contact2, contact3;
-	float x1,y1,z1,x2,y2,z2,x3,y3,z3;
-	float rr1,rr2,rr3;
+	double contact1, contact2, contact3;
+	double x1,y1,z1,x2,y2,z2,x3,y3,z3;
+	double rr1,rr2,rr3;
 	double xx,yy,zz;
 
 	// Array containing all coordinates
 	int c1_size = (index_size-2)*3;
 	int *c1 = new int[c1_size];
 #pragma acc enter data create(c1[0:c1_size])
-
-	float *contacts = new float[(index_size-2)*3];
-#pragma acc enter data create(contacts[0:(index_size-2)*3])
 
 	// Avoid copying "this" pointer
 	//double *x_arr_this = x_arr;
@@ -3153,10 +3150,6 @@ reduction(+:contact3) private(jj,xx,yy,zz,rr1,rr2,rr3)
 				contact3+=exp(-rr3/3.0);
 			}				
 		}
-
-		contacts[(i-1)*3+0] = contact1;
-		contacts[(i-1)*3+1] = contact2;
-		contacts[(i-1)*3+2] = contact3;
 	
 		if(ii1 < -1){
 			results[((i-1)*3)+0]=-1.0;
@@ -3179,12 +3172,6 @@ reduction(+:contact3) private(jj,xx,yy,zz,rr1,rr2,rr3)
 	//cout << "End get all contacts" << endl;
 #pragma acc exit data delete(c1)
 	delete(c1);
-#pragma acc exit data copyout(contacts[0:(index_size-2)*3])
-	ofstream myfile;
-	myfile.open("contact.txt");
-	for(int q = 0; q < (index_size-2)*3; q++)
-		myfile << contacts[q] << "\n";
-	myfile.close();
 
 	cout << "get_all_contacts: " << omp_get_wtime() - st << " seconds" << endl;
 }	
