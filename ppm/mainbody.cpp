@@ -1678,11 +1678,11 @@ default(present)
 		}
 		id=i+1;
 
-		code = pdb->code(id);
-		//if((id-1)<0 || (id-1) >v_size-1)
-		//	code='X';
-		//else
-		//	code=v_oln[id-1];
+		//code = pdb->code(id);
+		if((id-1)<0 || (id-1) >v_size-1)
+			code='X';
+		else
+			code=v_oln[id-1];
 
 
 		if((id-2)<0 || (id-2) >v_size-1)
