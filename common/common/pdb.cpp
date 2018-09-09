@@ -2574,11 +2574,13 @@ void CPdb::getred(int in,vector<struct ired> *t)
 	return;
 }
 
+#pragma acc routine seq
 char CPdb::code(int in)
 {
 	char c;
 	in=in-1;
-	if(in<0 || in >(int)v.size()-1)
+	//if(in<0 || in >(int)v.size()-1)
+	if(in<0 || in > v_size-1)
 		c='X';
 	else
 		c=v_oneletternames[in];

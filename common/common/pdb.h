@@ -127,7 +127,10 @@ public:
 		void clearred(void);
 		void caha(vector<index_three> *);
 		void heavycoor();
+
+#pragma acc routine seq
 		char code(int);
+
 		int  chain(int in);
 		void name(int,char*);
 		void print_prediction();
