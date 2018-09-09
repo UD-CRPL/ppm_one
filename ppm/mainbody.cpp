@@ -2055,7 +2055,6 @@ ca_cosphi[0:16],ca_sinphi[0:16])
 		predictions[((i-1)*6)+3]=pre_h;
 		predictions[((i-1)*6)+5]=pre_ha;
 	}
-} // end parallel
 
 #pragma acc exit data delete(hbond_effect_arr, \
 ani_effect_arr, ring_effect_arr, ani_effect_ha_arr,  \
