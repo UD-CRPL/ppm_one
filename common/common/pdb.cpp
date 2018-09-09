@@ -1537,6 +1537,19 @@ int CPdb::loadpdb(string filename)
 }
 
 
+void CPdb::acc_device_allocate()
+{
+	#pragma acc enter data copyin(this)
+	#pragma acc enter data copyin(v_oneletternames[0:v_size], code_pos[0:v_size], v_arr[0:v_size])
+}
+
+void CPdb::acc_device_deallocate()
+{
+	#pragma acc exit data delete(v_oneletternames, code_pos, v_arr)
+	#pragma acc exit data delete(this)
+}
+
+
 		
 // Altered to use "END" or "ENDMDL" to support some PDB files
 int CPdb::loadpdb_old(string filename)

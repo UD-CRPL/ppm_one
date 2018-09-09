@@ -67,6 +67,9 @@ protected:
 
 
 public:
+		void acc_device_allocate();
+		void acc_device_deallocate();
+
 		CAminoacid **v_arr;
 		int v_size;
 	//dssp stuff

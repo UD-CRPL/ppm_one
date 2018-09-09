@@ -80,7 +80,6 @@ protected:
 	
 	bool bnew;
 	class CBmrb bmrb;
-	class CPdb *pdb;
 	class CTraj *traj;
 	class CDihe_process dihe_process;
 	vector<struct methyl_group> select;
@@ -119,6 +118,8 @@ protected:
 
 
 public:
+
+	class CPdb *pdb;
 
 	//ppm old version
 	static double c_c[5][366];

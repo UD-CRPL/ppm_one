@@ -1552,8 +1552,8 @@ void CMainbody::predict_bb_static_ann()
 #pragma acc enter data create(hbond_effect_arr[0:hbond_effect_size], \
 ani_effect_arr[0:bbnh_size], ring_effect_arr[0:bbnh_size], ani_effect_ha_arr[0:bb_size],  \
 ring_effect_ha_arr[0:bb_size], results[0:results_size], predictions[0:(index_size-2)*6])                                                  \
-copyin(ha_protons_new[0:bb_size], index_arr[0:index_size], c2_arr[0:c2_size], blosum[0:400], v_oln[0:v_size], dihe[0:dihe_size],      \
-num_arr[0:num_size], v_pos[0:v_size])
+copyin(ha_protons_new[0:bb_size], index_arr[0:index_size], c2_arr[0:c2_size], blosum[0:400], dihe[0:dihe_size],      \
+num_arr[0:num_size])
 
 	#pragma acc parallel loop present(hbond_effect_arr[0:hbond_effect_size])
 	for( i=0; i<hbond_effect_size; i++ ) {
