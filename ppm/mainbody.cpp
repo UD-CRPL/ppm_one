@@ -2317,11 +2317,12 @@ void CMainbody::predict_bb_static_new()
 		c1.push_back(bb.at(index.at(i).x1-1).cbpos);
 		c1.push_back(bb.at(index.at(i).x1-1).copos);
 		c2=pdb->getselect(":1-%@allheavy");
-		int* c2_arr = c2.data();
-		int c2_size = c2.size();
+		//int* c2_arr = c2.data();
+		//int c2_size = c2.size();
 
 		result.clear();
-		traj->get_contact(c1,c2_arr, c2_size,&result);
+		//traj->get_contact(c1,c2_arr, c2_size,&result);
+		traj->get_contact(c1,c2,&result);
 		result.push_back(result.at(0));
 		result.push_back(result.at(0));
 		result.push_back(result.at(0));
