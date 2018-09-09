@@ -3058,11 +3058,11 @@ void CTraj::get_all_contacts(bb_group *bb, int bb_size, index_two *index, int in
 	//cout << "Get all contacts" << endl;
 	// Variables
 	int i, j;
-	int ii1, ii2, ii3 ,jj;
-	float contact1, contact2, contact3;
-	float x1,y1,z1,x2,y2,z2,x3,y3,z3;
-	float rr1,rr2,rr3;
-	double xx,yy,zz;
+	//int ii1, ii2, ii3 ,jj;
+	//float contact1, contact2, contact3;
+	//float x1,y1,z1,x2,y2,z2,x3,y3,z3;
+	//float rr1,rr2,rr3;
+	//double xx,yy,zz;
 
 	// Array containing all coordinates
 	int c1_size = (index_size-2)*3;
@@ -3103,13 +3103,13 @@ void CTraj::get_all_contacts(bb_group *bb, int bb_size, index_two *index, int in
 
 	//#pragma acc enter data copyin(c1[0:(index_size-2)*3],c2[0:c2_size],results[0:results_size])
 	//#pragma acc enter data copyin(results[0:results_size])
-#pragma acc parallel loop gang independent private(contact1, contact2, contact3, ii1, ii2, ii3, x1, y1, z1, \
-x2, y2, z2, x3, y3, z3)
+#pragma acc parallel loop gang independent
 	for(i=0+1;i<(int)index_size-1;i++)
 	{
-		contact1=0.0; contact2=0.0; contact3=0.0;
+		float contact1=0.0; float contact2=0.0; float contact3=0.0;
 
-		ii1=c1[((i-1)*3)+0]; ii2=c1[((i-1)*3)+1]; ii3=c1[((i-1)*3)+2];
+		int ii1=c1[((i-1)*3)+0]; int ii2=c1[((i-1)*3)+1]; int ii3=c1[((i-1)*3)+2];
+		float x1,y1,z1,x2,y2,z2,x3,y3,z3;
 
 		if(ii1 < 0){ 
 			x1=0; y1=0; z1=0;
@@ -3130,18 +3130,18 @@ x2, y2, z2, x3, y3, z3)
 		}
 
 #pragma acc loop vector independent reduction(+:contact1) reduction(+:contact2) \
-reduction(+:contact3) private(jj,xx,yy,zz,rr1,rr2,rr3)
+reduction(+:contact3)
 		for(j=0;j<c2_size;j++)
 		{
-			jj=c2[j];
+			int jj=c2[j];
 			if(jj>=0){
 				jj--;
-				xx = x_arr[jj];
-				yy = y_arr[jj];
-				zz = z_arr[jj];
-				rr1=(xx-x1)*(xx-x1)+(yy-y1)*(yy-y1)+(zz-z1)*(zz-z1);
-				rr2=(xx-x2)*(xx-x2)+(yy-y2)*(yy-y2)+(zz-z2)*(zz-z2);
-				rr3=(xx-x3)*(xx-x3)+(yy-y3)*(yy-y3)+(zz-z3)*(zz-z3);
+				double xx = x_arr[jj];
+				double yy = y_arr[jj];
+				double zz = z_arr[jj];
+				float rr1=(xx-x1)*(xx-x1)+(yy-y1)*(yy-y1)+(zz-z1)*(zz-z1);
+				float rr2=(xx-x2)*(xx-x2)+(yy-y2)*(yy-y2)+(zz-z2)*(zz-z2);
+				float rr3=(xx-x3)*(xx-x3)+(yy-y3)*(yy-y3)+(zz-z3)*(zz-z3);
 				rr1=sqrt(rr1);
 				rr2=sqrt(rr2);
 				rr3=sqrt(rr3);
