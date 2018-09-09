@@ -82,7 +82,7 @@ public:
 		void getvector(vector<struct index_three>,vector<double> *,vector<double> *,vector<double> *);
 		void do_rmsf(void);
 
-		void get_contact(vector<int> pos, vector<int> used, int used_size, vector<float> * result);
+		void get_contact(vector<int> pos, vector<int> used, vector<float> * result);
 		void get_contact(float rc,float shift, vector<int> pos, vector<int> used, vector<float> * result);
 		//void get_all_contacts(vector<struct bb_group> *bb, vector<struct index_two> *index, int index_size, int *c2, int c2_size, float *results, int results_size);
 		void get_all_contacts(bb_group *, int , index_two *, int, int *, int, float *, int);
