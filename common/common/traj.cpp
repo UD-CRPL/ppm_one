@@ -3183,7 +3183,7 @@ reduction(+:contact3) private(jj,xx,yy,zz,rr1,rr2,rr3)
 	ofstream myfile;
 	myfile.open("contact.txt");
 	for(int q = 0; q < (index_size-2)*3; q++)
-		myfile << contact[q] << "\n";
+		myfile << contacts[q] << "\n";
 	myfile.close();
 
 	cout << "get_all_contacts: " << omp_get_wtime() - st << " seconds" << endl;
