@@ -1508,6 +1508,19 @@ void CMainbody::predict_bb_static_ann()
 	int v_size = pdb->v_size;
 	double pre_ca, pre_cb, pre_co, pre_n, pre_h, pre_ha;
 
+	double oneline[101];
+	double oneline_cb[101];
+	double oneline_co[101];
+	double oneline_n[101];
+	double oneline_h[110];
+	double oneline_ha[110];
+	double out_arr[32];
+
+	int ca_index[12];
+	int ca_base1,ca_base2,ca_base3,ca_stop1,ca_stop2,ca_stop3,ca_index_size1,ca_index_size2,ca_index_size3;
+	int ca_p,ca_i,ca_j,ca_k,ca_t1,ca_t2,ca_t3;
+	double ca_cosphi[16],ca_sinphi[16];
+
 
 	//ann_ca.load("ann_ca.dat");
 	ann_ca.loadp(p_ann_ca);
@@ -1585,7 +1598,7 @@ num_arr[0:num_size], v_pos[0:v_size])
 	traj->getring_acc(ring_index_new, ring_index_size, ha_protons_new, bb_size, ring_effect_ha_arr, bb_size);
 	traj->get_all_contacts(bb_arr,bb_size,index_arr,index_size,c2_arr,c2_size,results,results_size);
 	
-	ofstream myfile;
+/*	ofstream myfile;
 
 	myfile.open("bb.txt");
 #pragma acc update host(bb_arr[0:bb_size])
@@ -1640,25 +1653,26 @@ num_arr[0:num_size], v_pos[0:v_size])
 	myfile.open("getcontact.txt");
 	for(int q = 0; q < results_size; q++)
 		myfile << results[q] << "\n";
-	myfile.close();
+	myfile.close();*/
 
-#pragma acc parallel default(present)
-{
-	#pragma acc loop independent gang private(code,code_pre,code_fol,pos,id,pre_ca,pre_cb,pre_co,pre_n,pre_h,pre_ha)
+#pragma acc parallel loop independent gang private(code,code_pre,code_fol,pos,id,pre_ca,pre_cb,pre_co,pre_n,pre_h,pre_ha, \
+oneline[0:101],oneline_cb[0:101],oneline_co[0:101],oneline_n[0:101],oneline_h[0:110],oneline_ha[0:110],out_arr[0:32], \
+ca_index[0:12],ca_base1,ca_base2,ca_base3,ca_stop1,ca_stop2,ca_stop3,ca_index_size1,ca_index_size2,ca_index_size3, \
+ca_cosphi[0:16],ca_sinphi[0:16])
 	for(i=0+1;i<index_size-1;i++)
 	{
-		double oneline[101];
-		double oneline_cb[101];
-		double oneline_co[101];
-		double oneline_n[101];
-		double oneline_h[110];
-		double oneline_ha[110];
-		double out_arr[32];
+		//double oneline[101];
+		//double oneline_cb[101];
+		//double oneline_co[101];
+		//double oneline_n[101];
+		//double oneline_h[110];
+		//double oneline_ha[110];
+		//double out_arr[32];
 
-		int ca_index[12];
-		int ca_base1,ca_base2,ca_base3,ca_stop1,ca_stop2,ca_stop3,ca_index_size1,ca_index_size2,ca_index_size3;
-		int ca_p,ca_i,ca_j,ca_k,ca_t1,ca_t2,ca_t3;
-		double ca_cosphi[16],ca_sinphi[16];
+		//int ca_index[12];
+		//int ca_base1,ca_base2,ca_base3,ca_stop1,ca_stop2,ca_stop3,ca_index_size1,ca_index_size2,ca_index_size3;
+		//int ca_p,ca_i,ca_j,ca_k,ca_t1,ca_t2,ca_t3;
+		//double ca_cosphi[16],ca_sinphi[16];
 
 
 		if(index_arr[i].x1<0){

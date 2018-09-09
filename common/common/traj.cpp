@@ -3177,104 +3177,14 @@ reduction(+:contact3) private(jj,xx,yy,zz,rr1,rr2,rr3)
 }	
 
 
-// Updated function for OpenACC
-// Was replaced by better optmized version
-void CTraj::get_contact(vector<int> pos, int* used, int used_size, vector<float> * result)
+void CTraj::get_contact(vector<int> pos, vector<int> used, vector<float> * result)
 {
-	int j;
-	int ii1, ii2, ii3 ,jj;
-	float contact1, contact2, contact3;
-	float x1,y1,z1,x2,y2,z2,x3,y3,z3;
-	float rr1,rr2,rr3;
-	double xx,yy,zz;
+	int i,j;
+	int ii,jj;
+	float contact;
+	float x0,y0,z0;
+	float rr;
 
-//////////////////////////////////////////////////////////////
-
-
-	int *pos_arr = pos.data();
-
-	contact1=0.0;
-	contact2=0.0;
-	contact3=0.0;
-
-	ii1=pos_arr[0];
-	ii2=pos_arr[1];
-	ii3=pos_arr[2];
-
-	if(ii1 < 0){
-		x1=0;
-		y1=0;
-		z1=0;
-	} else {
-		ii1--;
-		x1=x[ii1];
-		y1=y[ii1];
-		z1=z[ii1];
-	}
-	if(ii2 < 0){
-		x2=0;
-		y2=0;
-		z2=0;
-	} else {
-		ii2--;
-		x2=x[ii2];
-		y2=y[ii2];
-		z2=z[ii2];
-	}if(ii3 < 0){
-		x3=0;
-		y3=0;
-		z3=0;
-	} else {
-		ii3--;
-		x3=x[ii3];
-		y3=y[ii3];
-		z3=z[ii3];
-	}
-
-	double *x_arr_this = x_arr;
-	double *y_arr_this = y_arr;
-	double *z_arr_this = z_arr;
-
-	#pragma acc parallel loop present(used[0:used_size],x_arr_this[0:x_size],y_arr_this[0:y_size],z_arr_this[0:z_size]) \
-		reduction(+:contact1) reduction(+:contact2) reduction(+:contact3) private(jj,xx,yy,zz,rr1,rr2,rr3)
-	for(j=0;j<used_size;j++)
-	{
-		jj=used[j];
-		if(jj>=0){
-			jj--;
-			xx = x_arr_this[jj];
-			yy = y_arr_this[jj];
-			zz = z_arr_this[jj];
-			rr1=(xx-x1)*(xx-x1)+(yy-y1)*(yy-y1)+(zz-z1)*(zz-z1);
-			rr2=(xx-x2)*(xx-x2)+(yy-y2)*(yy-y2)+(zz-z2)*(zz-z2);
-			rr3=(xx-x3)*(xx-x3)+(yy-y3)*(yy-y3)+(zz-z3)*(zz-z3);
-			rr1=sqrt(rr1);
-			rr2=sqrt(rr2);
-			rr3=sqrt(rr3);
-			contact1+=exp(-rr1/3.0);
-			contact2+=exp(-rr2/3.0);
-			contact3+=exp(-rr3/3.0);
-		}				
-	}
-	
-	if(ii1 < -1){
-		result->push_back(-1.0);
-	} else {
-		result->push_back(contact1);
-	}
-	if(ii2 < -1){
-		result->push_back(-1.0);
-	} else {
-		result->push_back(contact2);
-	}if(ii3 < -1){
-		result->push_back(-1.0);
-	} else {
-		result->push_back(contact3);
-	}
-
-//////////////////////////////////////////////////////////////
-
-/*
 	for(i=0;i<(int)pos.size();i++)
 	{
 		contact=0.0;
@@ -3300,7 +3210,8 @@ void CTraj::get_contact(vector<int> pos, int* used, int used_size, vector<float>
 		}
 		result->push_back(contact);
 	}
-*/
+
+	return;
 }
 
 
