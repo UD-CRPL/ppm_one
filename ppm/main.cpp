@@ -93,8 +93,10 @@ int main(int argc, char ** argv)
 
 
 	nconf=mainbody.loadpdb(pdbname,gmxname);
+	mainbody.traj->acc_device_allocate();
 	mainbody.set_range(begin,stop);
 	mainbody.load(bmrbname);
+	mainbody.pdb->acc_device_allocate();
 
 
 
@@ -129,19 +131,18 @@ int main(int argc, char ** argv)
 	{
 		cout<<"Prediction using the ANN model with static parameters set\n";
 		cout<<"Chemical shifts root-mean-square deviations (RMSDs) between predicted and experimental values:"<<endl;
-		mainbody.pdb->acc_device_allocate();
-		mainbody.traj->acc_device_allocate();
 		mainbody.predict_bb_static_ann();
 		mainbody.predict_proton_static_new();
 		mainbody.print_prediction(cmdline.query("-pre"));
-		mainbody.pdb->acc_device_deallocate();
-		mainbody.traj->acc_device_deallocate();
 	}
 
 	else
 	{
 		cout<<"Unrecognized command line arguments!\n";
 	}
+
+	mainbody.pdb->acc_device_deallocate();
+	mainbody.traj->acc_device_deallocate();
 
 	cout << "Total Program Runtime: " << omp_get_wtime() - st << " seconds" << endl;
 
