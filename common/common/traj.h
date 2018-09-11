@@ -16,6 +16,10 @@ protected:
 		double noedistance_frame(vector<int> *att1, vector<int> *att2,int n);
 
 public:
+
+		void acc_device_allocate();
+		void acc_device_deallocate();
+
 		int nres;
 		int natom,nframe;
 		vector<double> x;

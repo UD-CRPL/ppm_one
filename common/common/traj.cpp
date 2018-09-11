@@ -14,6 +14,26 @@ using namespace std;
 using namespace ldw_math;
 
 
+void CTraj::acc_device_allocate()
+{
+	x_arr = x.data();
+	x_size = x.size();
+	y_arr = y.data();
+	y_size = y.size();
+	z_arr = z.data();
+	z_size = z.size();
+#pragma acc enter data copyin(this)
+#pragma acc enter data copyin( x_arr[0:x_size], y_arr[0:y_size], z_arr[0:z_size])
+}
+
+
+void CTraj::acc_device_deallocate()
+{
+#pragma acc exit data delete(x_arr, y_arr, z_arr)
+#pragma acc exit data delete(this)
+}
+
+
 
 void CTraj::clear()
 {
@@ -113,15 +133,15 @@ int CTraj::loadcoor(string filename)
 		nframe=x.size()/natom;
 
 	// New variables to storing underlying x,y,z arrays for better GPU support
-	x_arr = x.data();
-	x_size = x.size();
-	y_arr = y.data();
-	y_size = y.size();
-	z_arr = z.data();
-	z_size = z.size();
+	//x_arr = x.data();
+	//x_size = x.size();
+	//y_arr = y.data();
+	//y_size = y.size();
+	//z_arr = z.data();
+	//z_size = z.size();
 
-#pragma acc enter data copyin(this)
-#pragma acc enter data copyin( x_arr[0:x_size], y_arr[0:y_size], z_arr[0:z_size])
+//#pragma acc enter data copyin(this)
+//#pragma acc enter data copyin( x_arr[0:x_size], y_arr[0:y_size], z_arr[0:z_size])
 
 	return nframe;
 }
@@ -3225,8 +3245,8 @@ CTraj::CTraj()
 
 CTraj::~CTraj()
 {
-	#pragma acc exit data delete(x_arr, y_arr, z_arr)
-	#pragma acc exit data delete(this)
+	//#pragma acc exit data delete(x_arr, y_arr, z_arr)
+	//#pragma acc exit data delete(this)
 };
 
 

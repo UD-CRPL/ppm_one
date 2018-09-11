@@ -130,10 +130,12 @@ int main(int argc, char ** argv)
 		cout<<"Prediction using the ANN model with static parameters set\n";
 		cout<<"Chemical shifts root-mean-square deviations (RMSDs) between predicted and experimental values:"<<endl;
 		mainbody.pdb->acc_device_allocate();
+		mainbody.traj->acc_device_allocate();
 		mainbody.predict_bb_static_ann();
 		mainbody.predict_proton_static_new();
 		mainbody.print_prediction(cmdline.query("-pre"));
 		mainbody.pdb->acc_device_deallocate();
+		mainbody.traj->acc_device_deallocate();
 	}
 
 	else
