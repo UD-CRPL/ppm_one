@@ -121,6 +121,9 @@ public:
 	class CPdb *pdb;
 	class CTraj *traj;
 
+	void acc_device_allocate();
+	void acc_device_deallocate();
+
 	//ppm old version
 	static double c_c[5][366];
 	static double c_h_add[5];

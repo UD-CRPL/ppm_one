@@ -953,10 +953,6 @@ CMainbody::~CMainbody()
 	}
 	delete [] sep_table;
 
-#pragma acc exit data delete(anistropy_new)
-#pragma acc exit data delete(allprotons3_new)
-#pragma acc exit data delete(ring_index_new)
-#pragma acc exit data delete(hbond_arr)
 };
 
 
@@ -1012,6 +1008,38 @@ int CMainbody::loadpdb(string name,string name2)
 }
 
 
+void CMainbody::acc_device_allocate()
+{
+	ring_index_new = ring_index.data();
+	ring_index_size = ring_index.size();
+	#pragma acc enter data copyin(ring_index_new[0:ring_index_size])
+	anistropy_new = anistropy.data();
+	anistropy_size = anistropy.size();
+	#pragma acc enter data copyin(anistropy_new[0:anistropy_size])
+	allprotons3_new = allprotons3.data();
+	allprotons3_size = allprotons3.size();
+	#pragma acc enter data copyin(allprotons3_new[0:allprotons3_size])
+	bb_arr = bb.data();
+	bb_size = bb.size();
+	#pragma acc enter data copyin(bb_arr[0:bb_size])
+	bbnh_arr = bbnh.data();
+	bbnh_size = bbnh.size();
+	#pragma acc enter data copyin(bbnh_arr[0:bbnh_size])
+	hbond_arr = hbond.data();
+	hbond_size = hbond.size();
+	#pragma acc enter data copyin(hbond_arr[0:hbond_size])
+	#pragma acc enter data copyin(this)
+}
+
+
+void CMainbody::acc_device_deallocate()
+{
+	#pragma acc exit data delete(ring_index_new, anistropy_new, allprotons3_new, \
+	bb_arr, bbnh_arr, hbond_arr)
+	#pragma acc exit data delete(this)
+}
+
+
 
 // Updated function for OpenACC
 // Includes data directives and GPU function call
@@ -1024,16 +1052,8 @@ void CMainbody::load(string bmrbname)
 
 	pdb->getdihe(&dihe_index,&dihe_num);
 	pdb->getring(&ring_index);
-	// getring ///
-	ring_index_new = ring_index.data();
-	ring_index_size = ring_index.size();
-#pragma acc enter data copyin(ring_index_new[0:ring_index_size])
-	//////////////
 	//pdb->ani_acc(&anistropy);
 	pdb->ani(&anistropy);
-	anistropy_new = anistropy.data();
-	anistropy_size = anistropy.size();
-#pragma acc enter data copyin(anistropy_new[0:anistropy_size])
 	//pdb->proton(&protons);
 	pdb->proton_acc(&protons);
 	pdb->allproton_acc(&allprotons);
@@ -1058,9 +1078,6 @@ void CMainbody::load(string bmrbname)
 	//bb=clear_acc(bb);
 	allprotons=clear_filter(allprotons);
 	allprotons3=clear_filter(allprotons3);
-	allprotons3_new = allprotons3.data();
-	allprotons3_size = allprotons3.size();
-#pragma acc enter data copyin(allprotons3_new[0:allprotons3_size])
 
 	//seperate ring group to two, one for internal, one for surface, according to contact sum !
 	int i;
@@ -1084,17 +1101,6 @@ void CMainbody::load(string bmrbname)
 		else
 			ring_index_external.push_back(ring_index.at(i));
 	}
-
-	bb_arr = bb.data();
-	bb_size = bb.size();
-	bbnh_arr = bbnh.data();
-	bbnh_size = bbnh.size();
-	hbond_arr = hbond.data();
-	hbond_size = hbond.size();
-#pragma acc enter data copyin(bb_arr[0:bb_size])
-#pragma acc enter data copyin(bbnh_arr[0:bbnh_size])
-#pragma acc enter data copyin(hbond_arr[0:hbond_size])
-#pragma acc enter data copyin(this)
 
 	return;
 }

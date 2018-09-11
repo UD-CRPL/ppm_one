@@ -97,6 +97,7 @@ int main(int argc, char ** argv)
 	mainbody.set_range(begin,stop);
 	mainbody.load(bmrbname);
 	mainbody.pdb->acc_device_allocate();
+	mainbody.acc_device_allocate();
 
 
 
@@ -143,6 +144,7 @@ int main(int argc, char ** argv)
 
 	mainbody.pdb->acc_device_deallocate();
 	mainbody.traj->acc_device_deallocate();
+	mainbody.acc_device_deallocate();
 
 	cout << "Total Program Runtime: " << omp_get_wtime() - st << " seconds" << endl;
 
