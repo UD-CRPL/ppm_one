@@ -93,8 +93,11 @@ int main(int argc, char ** argv)
 
 
 	nconf=mainbody.loadpdb(pdbname,gmxname);
+	mainbody.traj->acc_device_allocate();
 	mainbody.set_range(begin,stop);
 	mainbody.load(bmrbname);
+	mainbody.pdb->acc_device_allocate();
+	mainbody.acc_device_allocate();
 
 
 
@@ -138,6 +141,10 @@ int main(int argc, char ** argv)
 	{
 		cout<<"Unrecognized command line arguments!\n";
 	}
+
+	mainbody.pdb->acc_device_deallocate();
+	mainbody.traj->acc_device_deallocate();
+	mainbody.acc_device_deallocate();
 
 	cout << "Total Program Runtime: " << omp_get_wtime() - st << " seconds" << endl;
 

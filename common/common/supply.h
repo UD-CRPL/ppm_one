@@ -334,23 +334,37 @@ namespace ldw_math
 	const double pi=3.14159265358979;
 	double gaussrand(void);
 	vector<int> cluster_pick2(int,vector<double>, vector<double>, double);
+#pragma acc routine seq
 	double veclength(double x[3]);
+#pragma acc routine seq
 	void cross(double z[3],double x[3],double y[3]);
+#pragma acc routine seq
 	double dot(double x[3],double y[3]);
 
+#pragma acc routine seq
 	double coor_to_angle(double x2,double y2,double z2,double x3,double y3,double z3,double x4,double y4,double z4);
 	double coor_to_length(double x3,double y3,double z3,double x4,double y4,double z4);
 	double coor_to_dihe(double x1,double y1,double z1,double x2,double y2,double z2,double x3,double y3,double z3,double x4,double y4,double z4);
 
 	void fit(vector<double> x,vector<double> y, vector<double> *z,double *a,double *b,double *rms,double *r);
+#pragma acc routine seq
+	int dsvd_acc(double a[6][3], int m, int n, double *w, double v[3][3]);
 	int dsvd(double a[6][3], int m, int n, double *w, double v[3][3]);
 	int dsvd2(double *a, int m, int n, double *w, double v[3][3]);
+#pragma acc routine seq
 	double area( double a, double b, double c );
+#pragma acc routine seq
 	double PYTHAG(double a, double b);
+#pragma acc routine seq
 	double mymax(double a, double b);
+#pragma acc routine seq
 	double mysign(double a,double b);
+#pragma acc routine seq
 	double effect(double x[6][3], int m, double ori[3], double p1[3]);
+#pragma acc routine seq
 	void project(double ori[3], double p1[3], double p2[3]);
+#pragma acc routine seq
+	void ring_acc(double x[6][3], int m, double ori[3]);
 	void ring(double x[6][3], int m, double ori[3]);
 	void regression_plane(double *x, int m, double ori[3]);
 

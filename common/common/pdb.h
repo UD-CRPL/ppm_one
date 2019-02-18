@@ -67,6 +67,9 @@ protected:
 
 
 public:
+		void acc_device_allocate();
+		void acc_device_deallocate();
+
 		CAminoacid **v_arr;
 		int v_size;
 	//dssp stuff
@@ -124,7 +127,10 @@ public:
 		void clearred(void);
 		void caha(vector<index_three> *);
 		void heavycoor();
+
+#pragma acc routine seq
 		char code(int);
+
 		int  chain(int in);
 		void name(int,char*);
 		void print_prediction();
