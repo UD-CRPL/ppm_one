@@ -10,7 +10,6 @@ using namespace std;
 
 
 #include "aa.h"
-#include "debug.h"
 
 
 void CAminoacid::methyl_ambig(int flag)
@@ -281,41 +280,6 @@ struct noeatoms CAminoacid::query(string name)
 		t.length=0.0;
 	}
 	return t;
-}
-
-
-// New function for OpenACC
-// Runs sequentially, but works better with how the OpenACC code is laid out
-void CAminoacid::attach_bbprediction(double pre_ca, double pre_cb, double pre_c, double pre_n, double pre_h, double pre_ha)
-{
-	int i;
-
-	if(OneLetterName=='G')
-		pre_cb=999.0;
-	else if(OneLetterName=='C')
-		pre_ca=pre_cb=pre_c=pre_h=pre_n=999.0;
-	else if(OneLetterName=='P')
-		pre_h=pre_n=999.0;
-	else if(OneLetterName=='U')
-		pre_ca=pre_cb=pre_c=pre_h=pre_n=999.0;
-
-
-	for(i=0;i<(int)atoms.size();i++)
-	{
-		if(atoms.at(i).name=="CA")
-			atoms.at(i).cs_pre=pre_ca;
-		if(atoms.at(i).name=="CB")
-			atoms.at(i).cs_pre=pre_cb;
-		if(atoms.at(i).name=="C")
-			atoms.at(i).cs_pre=pre_c;
-		if(atoms.at(i).name=="H")
-			atoms.at(i).cs_pre=pre_h;
-		if(atoms.at(i).name=="N")
-			atoms.at(i).cs_pre=pre_n;
-		if(atoms.at(i).name=="HA" || atoms.at(i).name=="HA2" || atoms.at(i).name=="HA3")
-			atoms.at(i).cs_pre=pre_ha;
-	}
-
 }
 
 
@@ -1247,11 +1211,8 @@ void CAminoacid::process(vector<string> block)
 					bmatch=1;
 				}
 			}
-			if(bmatch==0){  //cannot match atomname, print out error message.
-				#ifndef IGNORE_UNKNOWN
+			if(bmatch==0)  //cannot match atomname, print out error message.
 				cout<<"Unknown atom name "<<atomname.c_str()<<" in residue "<<residue<<" "<<ThreeLetterName<<endl;
-				#endif
-			}
 		}
 		else  //heavy atoms or HN atom. try to match name directly.
 		{
@@ -1264,11 +1225,8 @@ void CAminoacid::process(vector<string> block)
 					bmatch=1;
 				}
 			}
-			if(bmatch==0) {  //cannot match atomname, print out error message.
-			#ifndef IGNORE_UNKNOWN
+		if(bmatch==0)  //cannot match atomname, print out error message.
 			cout<<"Unknown atom name "<<atomname.c_str()<<" in residue "<<residue<<" "<<ThreeLetterName<<endl;
-			#endif
-			}
 		}
 	}
 	return;
@@ -4614,7 +4572,6 @@ void CMiss::dihe(vector<dihe_group> * dihe_index)
 
 void CMiss::process(vector<string> block)
 {
-	original_residue = 0;
 	return;
 }
 
@@ -4625,7 +4582,6 @@ CMiss::CMiss()
 	resname="Missing";OneLetterName='X';strcpy(ThreeLetterName,"MIS");
 	atoms.clear();
 	order_parameters.clear();
-	original_residue = 0;
 
 	for(int i=0;i<6;i++)
 	{
@@ -4661,8 +4617,6 @@ void CUnk::process(vector<string> block)
 	string part;
 	vector<string> subblock;
 	struct Atom atom;
-
-	original_residue = 0;
 
 	for(i=0;i<(int)block.size();i++)
 	{

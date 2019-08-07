@@ -10,7 +10,7 @@ typedef struct
 	int n_neuron;
 	double *input;  //size is n_dim*m_dat
 	double *y;      //size is m_dat
-	double (*f)(int ndim, int nneuron, double *x, const double *p, int offset);
+	double (*f)(int ndim, int nneuron, double *x, const double *p);
 }data_struct_neuron;
 
 
@@ -43,6 +43,7 @@ class CAnn
 private:
 	int n_neuron;
 	int n_dat;
+	int n_dim;
 	int n_par;
 	int n_conf;
 
@@ -54,15 +55,12 @@ private:
 	double y_min;
 	double y_max;
 
-	double *p_save_flat;
-	int p_save_size;
+	vector< vector<double> > p_save;
+
 
 	void mapminmax(void);
 	void mapminmax_md(void);
 	void xapplyminmax(void);
-	void xapplyminmax(double *xx);
-	#pragma acc routine vector
-	void xapplyminmax_acc(double *xx);
 	void xapplyminmax_md(void);
 	bool loadx(string name);
 	bool loadx_md(string name);
@@ -79,19 +77,16 @@ private:
 protected:
 
 public:
-	int n_dim;
 	int train(int,string,string,int,double);
 	int train_md(int,string,string,int,double);
 	vector<double> predict(int,string,string,vector<vector< double> >);
 	vector<double> predict_md(int,string,string,vector<vector< double> >);
-	double predict_one(double *xx, int vec_size);
-	#pragma acc routine vector
-	double predict_one_acc(double *xx, int vec_size);
+	double predict_one(vector<double>);
 	double predict_one_md(int,vector<double>);
 	double assess(string,string,string);
 	double assess_md(string,string,string);
 	void load(string filename);
-	void loadp(double *); // Now with data directives
+	void loadp(double *);
 	void save(string filename);
 	void close(void);
 	
@@ -99,9 +94,7 @@ public:
 	~CAnn();
 
 	//callback functions.
-	static double myfunc_neuron(int ndim, int nneuron, double *x, const double *p, int offset);
-	#pragma acc routine seq
-	static double myfunc_neuron_acc(int ndim, int nneuron, double *x, const double *p, int offset);
+	static double myfunc_neuron(int ndim, int nneuron, double *x, const double *p);
 	static void   evaluation_neuron(const double *par, int n_dat, const void *pdata, double *fvect, int *user);
 
 	static double myfunc_mix(int nneuron, double *x, const double *p);

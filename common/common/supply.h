@@ -39,20 +39,19 @@ struct ring_group
 	bool bgood;
 };
 
-// Edited these data structures to start with initial values of 0.0
 struct double_five
 {
-	double x[5] {0.0, 0.0, 0.0, 0.0, 0.0};
+	double x[5];
 };
 
 struct double_four
 {
-	double x[4] {0.0, 0.0, 0.0, 0.0};
+	double x[4];
 };
 
 struct double_three
 {
-	double x[3] {0.0, 0.0, 0.0};
+	double x[3];
 };
 
 struct methyl_group
@@ -186,14 +185,13 @@ struct bbhbond_group
 
 struct ehbond
 {
-	double n_length=0;
-	double n_phi=0;
-	double n_psi=0;
+	double n_length;
+	double n_phi;
+	double n_psi;
 
-	double c_length=0;
-	double c_phi=0;
-	double c_psi=0;
-
+	double c_length;
+	double c_phi;
+	double c_psi;
 };
 
 struct eschbond
@@ -348,7 +346,6 @@ namespace ldw_math
 
 	void fit(vector<double> x,vector<double> y, vector<double> *z,double *a,double *b,double *rms,double *r);
 #pragma acc routine seq
-	int dsvd_acc(double a[6][3], int m, int n, double *w, double v[3][3]);
 	int dsvd(double a[6][3], int m, int n, double *w, double v[3][3]);
 	int dsvd2(double *a, int m, int n, double *w, double v[3][3]);
 #pragma acc routine seq
@@ -361,10 +358,8 @@ namespace ldw_math
 	double mysign(double a,double b);
 #pragma acc routine seq
 	double effect(double x[6][3], int m, double ori[3], double p1[3]);
-#pragma acc routine seq
 	void project(double ori[3], double p1[3], double p2[3]);
 #pragma acc routine seq
-	void ring_acc(double x[6][3], int m, double ori[3]);
 	void ring(double x[6][3], int m, double ori[3]);
 	void regression_plane(double *x, int m, double ori[3]);
 
