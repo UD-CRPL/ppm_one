@@ -11,6 +11,8 @@ using namespace std;
 #include "traj.h"
 using namespace ldw_math;
 
+#define USE_ACC_COMPARE
+#include "debug.h"
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -108,6 +110,7 @@ int CTraj::loadcoor(string filename)
 	else
 		nframe=x.size()/natom;
 
+#ifdef _OPENACC
 #pragma acc enter data copyin(this[:1])
   double *tmp = x.data();
   int sz = x.size();
@@ -118,6 +121,7 @@ int CTraj::loadcoor(string filename)
   tmp = z.data();
   sz = z.size();
 #pragma acc enter data copyin(tmp[:sz])
+#endif
 
 	return nframe;
 }
@@ -325,18 +329,18 @@ void CTraj::gethbond(vector<bbhbond_group> *hbond,vector<ehbond> *effect)
 					z2,z3,z4,z5,phi,psi,nid,cid)
 		for(j=0; j<hbond_size; j++)
 		{
-			k=j-i;
-			if(k<3 && k>-3)
+			//k=j-i;
+			if(j-i<3 && j-i>-3)
 				continue;
-			n=hbond_arr[i].npos;
-			h=hbond_arr[i].hpos;
-			if(h<=-1 || n<=-1) 
-				continue;
-			c=hbond_arr[j].cpos;
-			o=hbond_arr[j].opos;
-			if(o<=-1 || c<=-1)
-				continue;
-			n--;h--;c--;o--;
+			n=hbond_arr[i].npos-1;
+			h=hbond_arr[i].hpos-1;
+			//if(h<=-1 || n<=-1) 
+			//	continue;
+			c=hbond_arr[j].cpos-1;
+			o=hbond_arr[j].opos-1;
+			//if(o<=-1 || c<=-1)
+			//	continue;
+			//n--;h--;c--;o--;
 			if(h<0 || n<0 || o<0 || c<0)
 				continue;
 
@@ -2368,6 +2372,17 @@ void CTraj::get_contact(float rc,float shift, vector<int> pos, vector<int> used,
 	float x0,y0,z0;
 	float rr;
 
+	int *used_arr = used.data();
+	int used_size = used.size();
+	double *x_arr = x.data();
+	int x_size = x.size();
+	double *y_arr = y.data();
+	int y_size = y.size();
+	double *z_arr = z.data();
+	int z_size = z.size();
+
+#pragma acc data copyin(used_arr[:used_size], \
+ x_arr[:x_size], y_arr[:y_size], z_arr[:z_size])
 	for(i=0;i<(int)pos.size();i++)
 	{
 		contact=0.0;
@@ -2381,13 +2396,15 @@ void CTraj::get_contact(float rc,float shift, vector<int> pos, vector<int> used,
 		x0=x.at(ii);
 		y0=y.at(ii);
 		z0=z.at(ii);
-		for(j=0;j<(int)used.size();j++)
+#pragma acc parallel loop \
+ private(jj, rr) \
+ reduction(+:contact)
+		for(j=0;j<used_size;j++)
 		{
-			jj=used.at(j);
+			jj=used_arr[j]-1;
 			if(jj<0)
 				continue;
-			jj--;
-			rr=(x.at(jj)-x0)*(x.at(jj)-x0)+(y.at(jj)-y0)*(y.at(jj)-y0)+(z.at(jj)-z0)*(z.at(jj)-z0);
+			rr=(x_arr[jj]-x0)*(x_arr[jj]-x0)+(y_arr[jj]-y0)*(y_arr[jj]-y0)+(z_arr[jj]-z0)*(z_arr[jj]-z0);
 			rr=sqrt(rr)-shift;
 			contact+=exp(-rr/rc);				
 		}

@@ -13,7 +13,7 @@ using namespace std;
 
 #include "pdb.h"
 
-
+#include "debug.h"
 
 int CDssp::loaddata(string name)
 {
@@ -1243,7 +1243,7 @@ int CPdb::loadpdb(string filename)
 
 
 		part=line.substr(0,6);
-		if(part=="ENDMDL")
+		if(part=="END" || part=="ENDMDL")
 		{
 			break;
 		}
@@ -1370,7 +1370,7 @@ int CPdb::loadpdb(string filename)
 			}
 		}
 
-		for(i=stop-2;i>=0;i--)
+		for(i=stop-2;i>=start;i--)
 		{
 			pdbblock=blocks.at(i);
 			if(pdbblock.iligand==0 && blocks.at(i+1).iligand==1)
@@ -1421,8 +1421,10 @@ int CPdb::loadpdb(string filename)
 				else
 				{
 					t=new CUnk;
-					cout<<"Warning! unrecognized resiude name "<<residue<<" fore residue "<<index_old<<endl;
+					#ifndef BENCHMARK
+					cout<<"Warning! unrecognized residue name "<<residue<<" for residue "<<index_old<<endl;
 					printblock(pdbblock.block);
+					#endif
 				}
 
 				n++;t->setresidue(n);
@@ -1651,8 +1653,10 @@ int CPdb::loadpdb_old(string filename)
 		else
 		{
 			t=new CUnk;
+#ifndef BENCHMARK
 			cout<<"Warning! unrecognized resiude name "<<residue<<" fore residue "<<index_old<<endl;
 			printblock(block);
+#endif
 		}
 
 			if(t!=NULL)
@@ -1744,8 +1748,10 @@ int CPdb::loadpdb_old(string filename)
 		else
 		{
 			t=new CUnk;
+#ifndef BENCHMARK
 			cout<<"Warning! unrecognized resiude name "<<residue<<" fore residue "<<index_old<<endl;
 			printblock(block);
+#endif
 		}
 
 		if(t!=NULL)
@@ -2569,7 +2575,9 @@ void CPdb::proton(vector<struct proton> *sel, int flag)
 			}
 			if(bmiss==1)
 			{
+#ifndef BENCHMARK
 				cerr<<"Residue "<<sel->at(i).id<<" "<<sel->at(i).code<<" contain missing protons "<<sel->at(i).name<<" , removed"<<endl;
+#endif
 				sel->erase(sel->begin()+i);
 				i--;
 			}
@@ -2581,24 +2589,30 @@ void CPdb::proton(vector<struct proton> *sel, int flag)
 void CPdb::proton(vector<struct proton> *sel)
 {
 	int i;
+	vector<struct proton> tmp;
 	sel->clear();
 	for(i=0;i<(int)v.size();i++)
 	{
-		v.at(i)->proton2(sel);
+		v.at(i)->proton2(&tmp);
 	}
-	for(i=0;i<sel->size();i++)
+	for(i=0;i<tmp.size();i++)
 	{
 		bool bmiss=0;
-		for(int j=0;j<sel->at(i).nh;j++)
+		for(int j=0;j<tmp.at(i).nh;j++)
 		{
-			if(sel->at(i).hpos[j]<0)
+			if(tmp.at(i).hpos[j]<0) {
 				bmiss=1;
+				break;
+			}
 		}
-		if(bmiss==1)
-		{
+		if(bmiss==1) {
+#ifndef BENCHMARK
 			cerr<<"Residue "<<sel->at(i).id<<" "<<sel->at(i).code<<" contain missing protons "<<sel->at(i).name<<" , removed"<<endl;
-			sel->erase(sel->begin()+i);
-			i--;
+#endif
+			//sel->erase(sel->begin()+i);
+			//i--;
+		} else {
+			sel->push_back(tmp.at(i));
 		}
 	}
 }
@@ -2607,24 +2621,30 @@ void CPdb::proton(vector<struct proton> *sel)
 void CPdb::allproton3(vector<struct proton> *sel)
 {
 	int i;
+	vector<struct proton> tmp;
 	sel->clear();
 	for(i=0;i<(int)(int)v.size();i++)
 	{
-		v.at(i)->proton3(sel);
+		v.at(i)->proton3(&tmp);
 	}
-	for(i=0;i<sel->size();i++)
+	for(i=0;i<tmp.size();i++)
 	{
 		bool bmiss=0;
-		for(int j=0;j<sel->at(i).nh;j++)
+		for(int j=0;j<tmp.at(i).nh;j++)
 		{
-			if(sel->at(i).hpos[j]<0)
+			if(tmp.at(i).hpos[j]<0) {
 				bmiss=1;
+				break;
+			}
 		}
-		if(bmiss==1)
-		{
+		if(bmiss==1) {
+#ifndef BENCHMARK
 			cerr<<"Residue "<<sel->at(i).id<<" "<<sel->at(i).code<<" contain missing protons "<<sel->at(i).name<<" , removed"<<endl;
-			sel->erase(sel->begin()+i);
-			i--;
+#endif
+			//sel->erase(sel->begin()+i);
+			//i--;
+		} else {
+			sel->push_back(tmp.at(i));
 		}
 	}
 }
@@ -2632,24 +2652,30 @@ void CPdb::allproton3(vector<struct proton> *sel)
 void CPdb::allproton(vector<struct proton> *sel)
 {
 	int i;
+	vector<struct proton> tmp;
 	sel->clear();
 	for(i=0;i<(int)(int)v.size();i++)
 	{
-		v.at(i)->proton(sel);
+		v.at(i)->proton(&tmp);
 	}
-	for(i=0;i<sel->size();i++)
+	for(i=0;i<tmp.size();i++)
 	{
 		bool bmiss=0;
-		for(int j=0;j<sel->at(i).nh;j++)
+		for(int j=0;j<tmp.at(i).nh;j++)
 		{
-			if(sel->at(i).hpos[j]<0)
+			if(tmp.at(i).hpos[j]<0) {
 				bmiss=1;
+				break;
+			}
 		}
-		if(bmiss==1)
-		{
+		if(bmiss==1) {
+#ifndef BENCHMARK
 			cerr<<"Residue "<<sel->at(i).id<<" "<<sel->at(i).code<<" contain missing protons "<<sel->at(i).name<<" , removed"<<endl;
-			sel->erase(sel->begin()+i);
-			i--;
+#endif
+			//sel->erase(sel->begin()+i);
+			//i--;
+		} else {
+			sel->push_back(tmp.at(i));
 		}
 	}
 }

@@ -11,6 +11,8 @@ using namespace std;
 
 #include "aa.h"
 
+#include "debug.h"
+
 
 void CAminoacid::methyl_ambig(int flag)
 {
@@ -1211,8 +1213,10 @@ void CAminoacid::process(vector<string> block)
 					bmatch=1;
 				}
 			}
+#ifndef BENCHMARK
 			if(bmatch==0)  //cannot match atomname, print out error message.
 				cout<<"Unknown atom name "<<atomname.c_str()<<" in residue "<<residue<<" "<<ThreeLetterName<<endl;
+#endif
 		}
 		else  //heavy atoms or HN atom. try to match name directly.
 		{
@@ -1225,8 +1229,10 @@ void CAminoacid::process(vector<string> block)
 					bmatch=1;
 				}
 			}
+#ifndef BENCHMARK
 		if(bmatch==0)  //cannot match atomname, print out error message.
 			cout<<"Unknown atom name "<<atomname.c_str()<<" in residue "<<residue<<" "<<ThreeLetterName<<endl;
+#endif
 		}
 	}
 	return;

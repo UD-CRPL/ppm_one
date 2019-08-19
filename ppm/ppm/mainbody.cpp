@@ -12,6 +12,11 @@ using namespace std;
 #include "ann.h"
 #include "mainbody.h"
 
+#include "debug.h"
+
+#ifdef BENCHMARK
+#include <omp.h>
+#endif
 
 
 
@@ -826,11 +831,8 @@ int CMainbody::loadpdb(string name,string name2)
 
 void CMainbody::load(string bmrbname)
 {
-
 	bmrb.process(bmrbname.c_str());
 	pdb->attach_bmrb(bmrb);
-
-
 	pdb->getdihe(&dihe_index,&dihe_num);
 	pdb->getring(&ring_index);
 	pdb->ani(&anistropy);
@@ -842,21 +844,15 @@ void CMainbody::load(string bmrbname)
 	pdb->getbb(&bb);
 	pdb->bbnh(&bbnh);
 	pdb->bbhbond(&hbond);
-	pdb->schbond(&hbond);  //This is new ! 
-
-	
-
+	pdb->schbond(&hbond);  //This is new !
 	ndihe=dihe_index.size();
-
-
 	traj->getdihe(&dihe_index,&dihe);
 	dihe_process.init(dihe_num,&dihe,&dihe_index);
 	//process bb to remove all entry that has missing part !!
 	//bbnh willn't take effect if bb is not there for particular residue
-	clear(bb);
-	clear(allprotons);
-	clear(allprotons3);
-	
+	bb=clear(bb);
+	allprotons=clear(allprotons);
+	allprotons3=clear(allprotons3);
 
 	//seperate ring group to two, one for internal, one for surface, according to contact sum !
 	int i;
@@ -868,7 +864,13 @@ void CMainbody::load(string bmrbname)
 	{
 		ring_atom.push_back(ring_index.at(i).x2);
 	}
+#ifdef BENCHMARK
+	double clock = omp_get_wtime();
+#endif
 	traj->get_contact(1.00,0.0,ring_atom,heavy,&result);
+#ifdef BENCHMARK
+	printf("%.4f traj->get_contact\n", omp_get_wtime()-clock);
+#endif
 	ring_index_internal.clear();
 	ring_index_external.clear();
 
@@ -883,38 +885,43 @@ void CMainbody::load(string bmrbname)
 	return;
 }
 
-void CMainbody::clear(vector<struct proton> &protons)
+vector<struct proton> CMainbody::clear(vector<struct proton> &protons)
 {
 	int i;
 	int id,type;
+	vector<struct proton> newprotons;
+	newprotons.reserve(protons.size());
 
-	for(i=protons.size()-1;i>=0;i--)
+	for(i=0;i<protons.size();i++)
 	{
 		id=protons.at(i).id;
 		type=protons.at(i).type;
 
 		if(id<1 || id>pdb->getnres())
 		{
-			protons.erase(protons.begin()+i);
+			//protons.erase(protons.begin()+i);
 			continue;
 		}
 		if(dihe_process.test_proton(id,type)==0) //==0 means missing dihedral angles in this calculation !!
 		{
-			protons.erase(protons.begin()+i);
+			//protons.erase(protons.begin()+i);
 			continue;
 		}
+		newprotons.push_back(protons.at(i));
 	}
+	return newprotons;
 }
 
 
-void CMainbody::clear(vector<struct bb_group> &bb)
+vector<struct bb_group> CMainbody::clear(vector<struct bb_group> &bb)
 {
 	int i;
 	int id;
 	char code,code_pre,code_fol;
-
+	vector<struct bb_group> newbb;
+	newbb.reserve(bb.size());
 	
-	for(i=bb.size()-1;i>=0;i--)
+	for(i=0;i<bb.size();i++)
 	{
 		//cout<<i<<endl;
 		id=bb.at(i).id;
@@ -922,12 +929,12 @@ void CMainbody::clear(vector<struct bb_group> &bb)
 		//first and last residue are excluded
 		if(id<=1)
 		{
-			bb.erase(bb.begin()+i);
+			//bb.erase(bb.begin()+i);
 			continue;
 		}
 		if(id>=pdb->getnres())
 		{
-			bb.erase(bb.begin()+i);
+			//bb.erase(bb.begin()+i);
 			continue;
 		}
 
@@ -938,44 +945,46 @@ void CMainbody::clear(vector<struct bb_group> &bb)
 		//previous or following residue actually belong to another chain. 
 		if(pdb->chain(id)!=pdb->chain(id-1) || pdb->chain(id)!=pdb->chain(id+1))
 		{
-			bb.erase(bb.begin()+i);
+			//bb.erase(bb.begin()+i);
 			continue;
 		}
 
 		//missing or unknow residue should NOT be predicted. This is also true if either previous or following residue is missing (or unknown)
 		if(code_pre=='X' || code_pre=='B' || code_fol=='X' || code_fol=='B'|| code=='X' || code=='B')
 		{
-			bb.erase(bb.begin()+i);
+			//bb.erase(bb.begin()+i);
 			continue;
 		}
 
 		if(dihe_process.test(id,4,4)==0) //==0 means missing dihedral angles in this calculation !!
 		{
-			bb.erase(bb.begin()+i);
+			//bb.erase(bb.begin()+i);
 			continue;
 		}
 
 		if(bb.at(i).capos<0 ||  bb.at(i).copos<0 || bb.at(i).npos<0 )
 		{
-			bb.erase(bb.begin()+i);
+			//bb.erase(bb.begin()+i);
 			continue;
 		}
 
 		if(bb.at(i).cbpos<0 && bb.at(i).code!='G')
 		{
-			bb.erase(bb.begin()+i);
+			//bb.erase(bb.begin()+i);
 			continue;
 		}
 
 		if(bb.at(i).hpos<0 && bb.at(i).code!='P')
 		{
-			bb.erase(bb.begin()+i);
+			//bb.erase(bb.begin()+i);
 			continue;
 		}
 
+		newbb.push_back(bb.at(i));
+
 	}
 
-	return;
+	return newbb;
 }
 
 
@@ -1149,6 +1158,10 @@ void CMainbody::predict_bb_static_ann()
 	vector<double> oneline_n;
 	vector<double> oneline_ha;
 
+#ifdef BENCHMARK
+	double clock;
+#endif
+
 
 	class CAnn ann_ca,ann_cb,ann_co,ann_n,ann_h,ann_ha;
 
@@ -1160,11 +1173,23 @@ void CMainbody::predict_bb_static_ann()
 	ann_h.loadp(p_ann_h);
 	ann_ha.loadp(p_ann_ha);
 
-
+#ifdef BENCHMARK
+	clock = omp_get_wtime();
+#endif
 	traj->gethbond(&hbond,&hbond_effect);
+#ifdef BENCHMARK
+	printf("%.4f gethbond\n", omp_get_wtime()-clock);
+	clock = omp_get_wtime();
+#endif
 	traj->getani(&anistropy,&bbnh,&ani_effect);
+#ifdef BENCHMARK
+	printf("%.4f getani(bb)\n", omp_get_wtime()-clock);
+	clock = omp_get_wtime();
+#endif
 	traj->getring(&ring_index,&bbnh,&ring_effect);
-
+#ifdef BENCHMARK
+	printf("%.4f getring(bb)\n", omp_get_wtime()-clock);
+#endif
 
 	
 	//gather all ha protons to calculate ring and ani.
@@ -1203,9 +1228,18 @@ void CMainbody::predict_bb_static_ann()
 
 		ha_protons.push_back(ha);
 	}
+#ifdef BENCHMARK
+	clock = omp_get_wtime();
+#endif
 	traj->getani(&anistropy,&ha_protons,&ani_effect_ha);
+#ifdef BENCHMARK
+	printf("%.4f getani(proton)\n", omp_get_wtime()-clock);
+	clock = omp_get_wtime();
+#endif
 	traj->getring(&ring_index,&ha_protons,&ring_effect_ha);
-
+#ifdef BENCHMARK
+	printf("%.4f getring(proton)\n", omp_get_wtime()-clock);
+#endif
 
 	index.resize(pdb->getnres());	
 	for(i=0;i<(int)index.size();i++)
@@ -1216,7 +1250,13 @@ void CMainbody::predict_bb_static_ann()
 		index.at(bbnh.at(i).id-1).x2=i+1;
 
 	c2 = pdb->getselect(":1-%@allheavy");
+#ifdef BENCHMARK
+	clock = omp_get_wtime();
+#endif
 	traj->get_contacts(bb,index,c2,&result);
+#ifdef BENCHMARK
+	printf("%.4f get_contacts\n", omp_get_wtime()-clock);
+#endif
 
 	for(i=0+1;i<(int)index.size()-1;i++)
 	{
@@ -1600,7 +1640,7 @@ void CMainbody::cal_error()
 	cas.resize(2);cbs.resize(2);cos.resize(2);hs.resize(2);ns.resize(2);has.resize(2);
 	bb.clear();
 	pdb->getbb(&bb);
-	clear(bb);
+	bb=clear(bb);
 	for(j=0;j<(int)bb.size();j++)
 	{
 		cas.at(0).push_back(bb.at(j).exp_ca);
@@ -2046,6 +2086,7 @@ void CMainbody::predict_proton_static_new(void)
 	float pre;
 	double *c;
 	vector< vector<double> > hs;
+	double clock;
 
 
 
@@ -2054,8 +2095,12 @@ void CMainbody::predict_proton_static_new(void)
 	
 	
 	allprotons=allprotons3;
+	clock = omp_get_wtime();
 	traj->getani(&anistropy,&allprotons,&ani_effect);
+	printf("%.4f getani(proton)\n", omp_get_wtime()-clock);
+	clock = omp_get_wtime();
 	traj->getring(&ring_index,&allprotons,&ring_effect);
+	printf("%.4f getani(proton)\n", omp_get_wtime()-clock);
 
 	hs.resize(2);
 

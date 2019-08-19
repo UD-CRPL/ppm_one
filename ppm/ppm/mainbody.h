@@ -145,8 +145,8 @@ public:
 	void load(string);
 	int set_range(int,int);
 
-	void clear(vector<struct bb_group> &bb);
-	void clear(vector<struct proton> &protons);
+	vector<struct bb_group> clear(vector<struct bb_group> &bb);
+	vector<struct proton> clear(vector<struct proton> &protons);
 
 
 

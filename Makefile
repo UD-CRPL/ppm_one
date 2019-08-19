@@ -8,9 +8,9 @@ CXXFLAGS= -g -O0 -std=c++11 -ta=tesla:cc70 -Minfo=accel
 
 OUT_DIR=build
 
-INC_COMMON= -I./common/ -I./common/common/ -I./common/munkres/
-INC_LMMIN= -I./lmmin/
-INC_PPM= -I./ppm/ -I./ppm/ppm/
+INC_COMMON= -I./openacc/ -I./common/ -I./common/common/ -I./common/munkres/
+INC_LMMIN= -I./openacc/ -I./lmmin/
+INC_PPM= -I./openacc/ -I./ppm/ -I./ppm/ppm/
 
 COMMONLIB=common
 MUNKRESLIB=munkres
@@ -35,9 +35,13 @@ DEPS=common/config.h \
      lmmin/lmstruct.h \
      ppm/config.h \
      ppm/ppm/data.h \
-     ppm/ppm/mainbody.h
+     ppm/ppm/mainbody.h \
+     openacc/debug.h
 
-all: munkres common lmmin ppm
+all: builddir munkres common lmmin ppm
+
+builddir:
+	mkdir -p $(OUT_DIR)
 
 clean:
 	rm -f common/common/*.o common/munkres/*.o lmmin/*.o ppm/ppm/*.o $(OUT_DIR)/*.a $(OUT_DIR)/$(EXE)
