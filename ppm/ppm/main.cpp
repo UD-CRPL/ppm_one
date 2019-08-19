@@ -18,11 +18,14 @@ using namespace std;
 #include "traj.h"
 #include "mainbody.h"
 
+#include "debug.h"
 
+#ifdef BENCHMARK
+#include <omp.h>
+#endif
 
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char ** argv)
-
 {
 	int begin,stop;
 	bool bh,bdetail,bnew,bann,btest,bnew_pdb,blinear,bold;
@@ -35,6 +38,10 @@ int main(int argc, char ** argv)
 	int nconf;
 
 	cout<<"PPM: an enemble-based chemical shifts predictor"<<endl;
+
+#ifdef BENCHMARK
+	double clock = omp_get_wtime();
+#endif
 
 	bh=bdetail=bnew=btest=bnew_pdb=bann=blinear=bold=0;
 
@@ -131,6 +138,10 @@ int main(int argc, char ** argv)
 	{
 		cout<<"Unrecognized command line arguments!\n";
 	}
+
+#ifdef BENCHMARK
+	printf("Total runtime: %.4f\n", omp_get_wtime()-clock);
+#endif
 
 	return 0;
 }
