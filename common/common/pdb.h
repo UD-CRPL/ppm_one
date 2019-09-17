@@ -3,7 +3,6 @@
 #include "supply.h"
 #include "bmrb.h"
 #include  "aa.h"
-#include <omp.h>
 
 
 #ifndef PDB
@@ -48,7 +47,6 @@ private:
 		vector<int> chain_block;
 		vector<int> chain_ligand;
 		vector<CAminoacid *> v;
-		char *v_oneletternames;
 		vector<CLigand *> ligand;
 		string pdbfilename;
 		string pdbseq;
@@ -67,11 +65,6 @@ protected:
 
 
 public:
-		void acc_device_allocate();
-		void acc_device_deallocate();
-
-		CAminoacid **v_arr;
-		int v_size;
 	//dssp stuff
 		CDssp dssp;
 	//nmr constrain stuff
@@ -95,7 +88,7 @@ public:
 		~CPdb(void);
 		void clear();
 		int buildpdb(string);
-		int loadpdb(string); // Updated for OpenACC
+		int loadpdb(string);
 		int loadpdb_old(string);
 		void getca(vector<int> *);
 		vector<int> getselectca(vector<int>);
@@ -106,14 +99,10 @@ public:
 		void getbbdihe_nopro(vector<dihe_group> *, int *);
 		void getring(vector<ring_group> *);
 		void proton(vector<struct proton> *);
-		void proton_acc(vector<struct proton> *); // Optimized Function
 		void proton(vector<struct proton> *,int);
 		void allproton(vector<struct proton> *);
-		void allproton_acc(vector<struct proton> *); // Optimized Function
 		void allproton3(vector<struct proton> *);
-		void allproton3_acc(vector<struct proton> *); // Optimized Function
 		void ani(vector<struct ani_group> *);
-		void ani_acc(vector<struct ani_group> *); // Optimized Function
 		void getbb(vector<struct bb_group> *);
         void getbb_assign(vector<struct bb_group> *);
 		void bbhbond(vector<bbhbond_group> *);
@@ -127,19 +116,12 @@ public:
 		void clearred(void);
 		void caha(vector<index_three> *);
 		void heavycoor();
-
-#pragma acc routine seq
 		char code(int);
-
 		int  chain(int in);
 		void name(int,char*);
 		void print_prediction();
 		void print_prediction(string);
-////////////////////////////////////////////////////////////
-		void print_debug(string);
-////////////////////////////////////////////////////////////
 		void attach_bbprediction(int,double*);
-		void attach_bbprediction(int, double, double, double, double, double, double);
 		void attach_protonprediction(int,string,double);
 		int attach_bmrb(class CBmrb );
 		double test_bmbr(class CBmrb bmrb);
@@ -178,10 +160,6 @@ public:
 		inline int getnmiss(void) {return nmiss;};
 
 		inline vector<double> get_wishart(int id) {return v.at(id-1)->get_wishart();};
-		inline int getvsize(void) {return v.size(); };
-		inline char *getvoneletter(void) {return v_oneletternames;};
-
-		int *code_pos;
 };
 
 struct modify

@@ -22,10 +22,7 @@ CAnn::CAnn()
 
 CAnn::~CAnn()
 {
-	#pragma acc exit data delete(p_save_flat, v_min, v_max)
-	#pragma acc exit data delete(this)
-	delete(p_save_flat);
-	p_save_size = 0;
+
 };
 
 
@@ -59,7 +56,7 @@ int CAnn::train(int ntrain, string name1,string name2,int n, double percent)
 	}
 	mapminmax();
 
-
+	
 	for(i=0;i<ntrain;i++)
 	{
 		initp(n);
@@ -87,7 +84,7 @@ int CAnn::train_md(int ntrain, string name1,string name2,int n, double percent)
 	}
 	mapminmax_md();
 
-
+	
 	for(i=0;i<ntrain;i++)
 	{
 		initp(n);
@@ -125,18 +122,12 @@ void CAnn::push_p(void)
 	vector<double> t;
 
 	t.clear();
-
-	double *p_save_tmp = new double[(p_save_size+1) * n_par];
-	memcpy(p_save_tmp, p_save_flat, p_save_size*n_par*sizeof(double));
-	delete(p_save_flat);
-	p_save_flat = p_save_tmp;
-
 	for(i=0;i<n_par;i++)
 	{
-		p_save_flat[p_save_size*n_par + i] = p[i];
+		t.push_back(p[i]);
 	}
-	p_save_size += 1;
 
+	p_save.push_back(t);
 }
 
 
@@ -149,7 +140,7 @@ void CAnn::initp(int n)
 	n_neuron=n;
 	n_par=n_dim*n_neuron+n_neuron+n_neuron+1;
 
-	if(p!=NULL)
+	if(p!=NULL) 
 		delete [] p;
 	p=new double[n_par];
 
@@ -174,7 +165,7 @@ bool CAnn::loadx(vector<vector<double> > xx)
 	n_dim=xx.at(0).size();
 
 	x=new double[n_dat*n_dim];
-
+	
 	for(i=0;i<n_dat;i++)
 	{
 		for(j=0;j<n_dim;j++)
@@ -182,7 +173,7 @@ bool CAnn::loadx(vector<vector<double> > xx)
 			x[i*n_dim+j]=xx.at(i).at(j);
 		}
 	}
-
+	
 	return 1;
 }
 
@@ -192,12 +183,12 @@ bool  CAnn::loadx_md(string name)
 	int i;
 	ifstream fin;
 	string line,part;
-	istringstream iss;
+	istringstream iss;	
 	vector<double> x_line;
 	vector<double> xx;
 	bool breturn=0;
 	bool bfirst=1;
-
+	
 	fin.open(name.c_str());
 	n_dat=0;
 	while(getline(fin,line))
@@ -212,7 +203,7 @@ bool  CAnn::loadx_md(string name)
 		}
 		x_line.clear();
 		while(iss>>part)
-		{
+		{	
 			x_line.push_back(atof(part.c_str()));
 		}
 		if(x_line.size()==0)
@@ -234,11 +225,11 @@ bool  CAnn::loadx_md(string name)
 	n_dat/=n_conf;
 
 	x=new double[n_dat*n_dim*n_conf];
-
+	
 
 	for(i=0;i<n_dat*n_dim*n_conf;i++)
 		x[i]=xx.at(i);
-
+	
 	return breturn;
 };
 
@@ -248,11 +239,11 @@ bool  CAnn::loadx(string name)
 	int i;
 	ifstream fin;
 	string line,part;
-	istringstream iss;
+	istringstream iss;	
 	vector<double> x_line;
 	vector<double> xx;
 	bool breturn=0;
-
+	
 	fin.open(name.c_str());
 	n_dat=0;
 	while(getline(fin,line))
@@ -261,7 +252,7 @@ bool  CAnn::loadx(string name)
 		iss.str(line);
 		x_line.clear();
 		while(iss>>part)
-		{
+		{	
 			x_line.push_back(atof(part.c_str()));
 		}
 		if(n_dat==0)
@@ -280,11 +271,11 @@ bool  CAnn::loadx(string name)
 
 
 	x=new double[n_dat*n_dim];
-
+	
 
 	for(i=0;i<n_dat*n_dim;i++)
 		x[i]=xx.at(i);
-
+	
 
 	return breturn;
 };
@@ -295,11 +286,11 @@ bool CAnn::loady(string name)
 	int i,n_dat2;
 	ifstream fin;
 	string line,part;
-	istringstream iss;
+	istringstream iss;	
 	vector<double> x_line;
 	vector<double> xx;
 	bool breturn=0;
-
+	
 	fin.open(name.c_str());
 	n_dat2=0;
 	while(getline(fin,line))
@@ -308,7 +299,7 @@ bool CAnn::loady(string name)
 		iss.str(line);
 		x_line.clear();
 		while(iss>>part)
-		{
+		{	
 			x_line.push_back(atof(part.c_str()));
 		}
 		if(x_line.size()!=1)
@@ -317,7 +308,7 @@ bool CAnn::loady(string name)
 			breturn=1;
 			break;
 		}
-
+		
 		n_dat2++;
 		xx.insert(xx.end(),x_line.begin(),x_line.end());
 	}
@@ -332,7 +323,7 @@ bool CAnn::loady(string name)
 		for(i=0;i<n_dat;i++)
 			y[i]=xx.at(i);
 	}
-
+	
 
 	return breturn;
 };
@@ -343,12 +334,12 @@ void CAnn::mapminmax()
 	double tmin,tmax,v;
 	int i,j,step;
 
-
+	
 	v_min=new double[n_dim];
 	v_max=new double[n_dim];
-
+	
 	for(i=0;i<n_dim;i++)
-	{
+	{	
 		tmax=-100000.0;
 		tmin=100000.0;
 		for(j=0;j<n_dat;j++)
@@ -363,7 +354,7 @@ void CAnn::mapminmax()
 
 		v_min[i]=tmin;
 		v_max[i]=tmax;
-
+	
 		for(j=0;j<n_dat;j++)
 		{
 			step=j*n_dim+i;
@@ -395,12 +386,12 @@ void CAnn::mapminmax_md()
 	double tmin,tmax,v;
 	int i,j,step;
 
-
+	
 	v_min=new double[n_dim];
 	v_max=new double[n_dim];
-
+	
 	for(i=0;i<n_dim;i++)
-	{
+	{	
 		tmax=-100000.0;
 		tmin=100000.0;
 		for(j=0;j<n_dat*n_conf;j++)
@@ -415,7 +406,7 @@ void CAnn::mapminmax_md()
 
 		v_min[i]=tmin;
 		v_max[i]=tmax;
-
+	
 		for(j=0;j<n_dat*n_conf;j++)
 		{
 			step=j*n_dim+i;
@@ -447,12 +438,12 @@ void CAnn::xapplyminmax_md()
 	double tmin,tmax;
 	int i,j,step;
 
-
+	
 	for(i=0;i<n_dim;i++)
-	{
+	{	
 		tmin=v_min[i];
 		tmax=v_max[i];
-
+	
 		for(j=0;j<n_dat*n_conf;j++)
 		{
 			step=j*n_dim+i;
@@ -465,37 +456,17 @@ void CAnn::xapplyminmax_md()
 };
 
 
-// New function for OpenACC
-// Vector Routine
-void CAnn::xapplyminmax_acc(double *xx)
-{
-	double tmin,tmax;
-	int i,j,step;
-	#pragma acc loop vector independent private(tmin,tmax,step)
-	for(i = 0; i < n_dim; i++)
-	{
-		tmin=v_min[i];
-		tmax=v_max[i];
-		#pragma acc loop seq
-		for(j = 0; j < n_dat; j++)
-		{
-			step = j*n_dim+i;
-			xx[step]=(xx[step]-tmin)/(tmax-tmin)*2-1;
-		}
-	}
-
-	return;
-};
-
-
 void CAnn::xapplyminmax()
 {
 	double tmin,tmax;
 	int i,j,step;
+
+	
 	for(i=0;i<n_dim;i++)
-	{
+	{	
 		tmin=v_min[i];
 		tmax=v_max[i];
+	
 		for(j=0;j<n_dat;j++)
 		{
 			step=j*n_dim+i;
@@ -530,7 +501,7 @@ void CAnn::train_it_md(double percent)
 			x2[i*n_dim*n_conf+j]=x[n[i]*n_dim*n_conf+j];
 		}
 	}
-
+	
 
 	n_dat_val=(int)(n_dat*percent);
 
@@ -587,7 +558,7 @@ void CAnn::train_it(double percent)
 			x2[i*n_dim+j]=x[n[i]*n_dim+j];
 		}
 	}
-
+	
 
 	n_dat_val=(int)(n_dat*percent);
 
@@ -629,84 +600,44 @@ void CAnn::evaluation_neuron(const double *par, int n_dat, const void *pdata, do
 	for(int i=0;i<n_dat;i++)
 	{
 		int begin=i*(d->n_dim);
-		fvect[i]=(d->y[i])-(d->f)(d->n_dim,d->n_neuron,&(d->input[begin]),(const double *)par,0);
+		fvect[i]=(d->y[i])-(d->f)(d->n_dim,d->n_neuron,&(d->input[begin]),(const double *)par);
 	}
 	return;
 };
 
 
-double CAnn::myfunc_neuron(int ndim, int nneuron, double *xx, const double *p, int offset)
+double CAnn::myfunc_neuron(int ndim, int nneuron, double *x, const double *p)
 {
 	int i;
 	double r2;
-	r2 = 0;
-	const int p2=offset+ndim*nneuron;
-	const int p3=p2+nneuron;
-	const int p4=p3+nneuron;
+	const double *p2,*p3,*p4;
 
-	for(int j = 0; j < nneuron; j++)
+	p2=p+ndim*nneuron;
+	p3=p2+nneuron;
+	p4=p3+nneuron;
+
+	r2=0;
+	for(int j=0;j<nneuron;j++)
 	{
-		double r = 0.0;
-		const int p1 = offset+j*ndim;
-		for(i = 0; i < ndim; i++)
+		const double *p1;
+		double r;
+		p1=p+j*ndim;
+		r=0.0;
+		for(i=0;i<ndim;i++)
 		{
-			r += xx[i] * p[p1+i];
+			r+=x[i]*p1[i];
 		}
-
-		r += p[p2+j];
-
+		r+=p2[j];
 		if(r<-30 )
 			r=0.0;
 		else if(r>30)
 			r=1.0;
 		else
 			r=(1-exp(-2*r))/(1+exp(-2*r));
-
-		r = r*p[p3+j];
+		r=r*p3[j];
 		r2+=r;
 	}
-
-	r2 += p[p4];
-
-	return r2;
-};
-
-// New function for OpenACC
-// Seq Routine
-double CAnn::myfunc_neuron_acc(int ndim, int nneuron, double *xx, const double *p, int offset)
-{
-	int i;
-	double r2;
-	r2 = 0;
-	const int p2=offset+ndim*nneuron;
-	const int p3=p2+nneuron;
-	const int p4=p3+nneuron;
-
-	#pragma acc loop seq reduction(+:r2)
-	for(int j = 0; j < nneuron; j++)
-	{
-		double r = 0.0;
-		const int p1 = offset+j*ndim;
-		#pragma acc loop seq reduction(+:r)
-		for(i = 0; i < ndim; i++)
-		{
-			r += xx[i] * p[p1+i];
-		}
-
-		r += p[p2+j];
-
-		if(r<-30 )
-			r=0.0;
-		else if(r>30)
-			r=1.0;
-		else
-			r=(1-exp(-2*r))/(1+exp(-2*r));
-
-		r = r*p[p3+j];
-		r2+=r;
-	}
-
-	r2 += p[p4];
+	r2+=p4[0];
 
 	return r2;
 };
@@ -799,9 +730,9 @@ void CAnn::savep(string filename,int n)
 
 	fout.open(filename.c_str(),std::ofstream::app);
 	for(j=0;j<n_par;j++)
-		fout << p_save_flat[n*n_par + j] << " ";
+		fout<<p_save.at(n).at(j)<<" ";
 	fout<<endl;
-
+	
 	fout.close();
 }
 
@@ -822,12 +753,12 @@ void CAnn::save(string filename)
 
 	fout<<y_min<<" "<<y_max<<endl;
 
-	fout << p_save_size << endl;
+	fout<<p_save.size()<<endl;
 
-	for(i=0;i<p_save_size;i++)
+	for(i=0;i<p_save.size();i++)
 	{
 		for(j=0;j<n_par;j++)
-			fout << p_save_flat[i*n_par + j] << " ";
+			fout<<p_save.at(i).at(j)<<" ";
 		fout<<endl;
 	}
 
@@ -835,8 +766,6 @@ void CAnn::save(string filename)
 };
 
 
-// Updated function for OpenACC
-// Contains data directives
 void CAnn::loadp(double *pdata)
 {
 	int i,j;
@@ -845,7 +774,7 @@ void CAnn::loadp(double *pdata)
 	int n_set;
 	vector<double> t;
 
-
+	
 
 	n_dim=(int)(*pdata);pdata++;
 	n_neuron=(int)(*pdata);pdata++;
@@ -865,23 +794,21 @@ void CAnn::loadp(double *pdata)
 
 	y_min=*pdata;pdata++;
 	y_max=*pdata;pdata++;
-
+	
 
 	n_set=(int)(*pdata);pdata++;
-	p_save_flat = new double[n_set*n_par]; // p_save_flat replaces a 2D vector
-	p_save_size = n_set;
+	
 	for(j=0;j<n_set;j++)
 	{
+		t.clear();
 		for(i=0;i<n_par;i++)
 		{
-			p_save_flat[j*n_par + i] = *pdata;
+			p[i]=*pdata;
 			pdata++;
+			t.push_back(p[i]);
 		}
+		p_save.push_back(t);
 	}
-
-	#pragma acc enter data copyin(this)
-	#pragma acc enter data copyin(p_save_flat[0:n_set*n_par])
-	#pragma acc enter data copyin(v_min[0:n_dim],v_max[0:n_dim])
 };
 
 
@@ -912,17 +839,16 @@ void CAnn::load(string filename)
 	fin>>y_min>>y_max;
 
 	fin>>n_set;
-
-	p_save_flat = new double[n_set*n_par];
-	p_save_size = n_set;
+	
 	for(j=0;j<n_set;j++)
 	{
 		t.clear();
 		for(i=0;i<n_par;i++)
 		{
 			fin>>p[i];
-			p_save_flat[j*n_par + i] = p[i];
+			t.push_back(p[i]);
 		}
+		p_save.push_back(t);
 	}
 
 	fin.close();
@@ -938,7 +864,7 @@ double CAnn::assess(string ann_name,string x_name,string y_name)
 
 	out=predict(0,ann_name,x_name,xx);
 
-
+	
 	if(loady(y_name)!=0)
 	{
 		cout<<"Load Y error"<<endl;
@@ -967,7 +893,7 @@ double CAnn::assess_md(string ann_name,string x_name,string y_name)
 
 	out=predict_md(0,ann_name,x_name,xx);
 
-
+	
 	if(loady(y_name)!=0)
 	{
 		cout<<"Load Y error"<<endl;
@@ -986,56 +912,36 @@ double CAnn::assess_md(string ann_name,string x_name,string y_name)
 	return rms;
 };
 
-
-double CAnn::predict_one( double *xx, int vec_size )
+double CAnn::predict_one( vector<double> xx )
 {
+	int j;
 	double tt,out;
 
-	if(vec_size!=n_dim)
+	if(xx.size()!=n_dim)
 		return 0;
 
 	n_dat=1;
-	xapplyminmax_acc(xx);
-	out=0;
-
-	for(int j=0;j<p_save_size;j++)
+	x=new double[n_dat*n_dim];
+	for(j=0;j<n_dim;j++)
 	{
-		tt=CAnn::myfunc_neuron(n_dim, n_neuron, xx, p_save_flat, n_par*j);
+		x[j]=xx.at(j);
+	}
+	xapplyminmax();
+
+	out=0;
+	for(int j=0;j<(int)p_save.size();j++)
+	{
+		for(int i=0;i<n_par;i++)
+			p[i]=p_save.at(j).at(i);
+	
+		tt=CAnn::myfunc_neuron(n_dim,n_neuron,x,p);
 		tt=(tt+1)/2*(y_max-y_min)+y_min;
 		out+=tt;
 	}
-
-	out/=p_save_size;
+	out/=p_save.size();
 	return out;
 };
-
-
-// New function for OpenACC
-// Vector Routine
-double CAnn::predict_one_acc( double *xx, int vec_size )
-{
-	double tt,out;
-
-	if(vec_size!=n_dim)
-		return 0;
-
-	n_dat=1;
-	xapplyminmax_acc(xx);
-	out=0;
-
-	#pragma acc loop vector independent reduction(+:out) private(tt)
-	for(int j=0;j<p_save_size;j++)
-	{
-		tt=CAnn::myfunc_neuron_acc(n_dim, n_neuron, xx, p_save_flat, n_par*j);
-		tt=(tt+1)/2*(y_max-y_min)+y_min;
-		out+=tt;
-	}
-
-	out/=p_save_size;
-	return out;
-};
-
-
+	
 double CAnn::predict_one_md(int n, vector<double> xx )
 {
 	int j;
@@ -1055,18 +961,18 @@ double CAnn::predict_one_md(int n, vector<double> xx )
 	xapplyminmax_md();
 
 	out=0;
-	for(int j=0;j<(int)p_save_size;j++)
+	for(int j=0;j<(int)p_save.size();j++)
 	{
 		for(int i=0;i<n_par;i++)
-			p[i]=p_save_flat[j*n_par + i];
-
+			p[i]=p_save.at(j).at(i);
+	
 		tt=CAnn::myfunc_md(n_dim,n_conf,n_neuron,x,p);
 		tt=(tt+1)/2*(y_max-y_min)+y_min;
 		out+=tt;
 	}
-	out/=p_save_size;
+	out/=p_save.size();
 	return out;
-};
+};	
 
 
 vector<double> CAnn::predict(int flag, string ann_name,string x_name, vector< vector<double> > xx)
@@ -1100,21 +1006,21 @@ vector<double> CAnn::predict(int flag, string ann_name,string x_name, vector< ve
 		cout<<"Inconsistent dimension between trained ANN and input X data"<<endl;
 		return out;
 	}
-
+	
 	xapplyminmax();
 	pre=new double[n_dat];
 	for(int i=0;i<n_dat;i++)
 		pre[i]=0.0;
-	for(int j=0;j<(int)p_save_size;j++)
+	for(int j=0;j<(int)p_save.size();j++)
 	{
 		for(int i=0;i<n_par;i++)
-			p[i] = p_save_flat[j*n_par + i];
+			p[i]=p_save.at(j).at(i);
 
 #pragma omp parallel for
 		for(int i=0;i<n_dat;i++)
 		{
 			int begin=i*n_dim;
-			tt=CAnn::myfunc_neuron(n_dim,n_neuron,x+begin,p,0);
+			tt=CAnn::myfunc_neuron(n_dim,n_neuron,x+begin,p);
 			tt=(tt+1)/2*(y_max-y_min)+y_min;
 			pre[i]+=tt;
 		}
@@ -1122,7 +1028,7 @@ vector<double> CAnn::predict(int flag, string ann_name,string x_name, vector< ve
 
 	for(int i=0;i<n_dat;i++)
 	{
-		pre[i]/=p_save_size;
+		pre[i]/=p_save.size();
 		out.push_back(pre[i]);
 	}
 
@@ -1161,15 +1067,15 @@ vector<double> CAnn::predict_md(int flag, string ann_name,string x_name, vector<
 		cout<<"Inconsistent dimension between trained ANN and input X data"<<endl;
 		return out;
 	}
-
+	
 	xapplyminmax_md();
 	pre=new double[n_dat];
 	for(int i=0;i<n_dat;i++)
 		pre[i]=0.0;
-	for(int j=0;j<(int)p_save_size;j++)
+	for(int j=0;j<(int)p_save.size();j++)
 	{
 		for(int i=0;i<n_par;i++)
-			p[i] = p_save_flat[j*n_par + i];
+			p[i]=p_save.at(j).at(i);
 
 #pragma omp parallel for
 		for(int i=0;i<n_dat;i++)
@@ -1183,14 +1089,14 @@ vector<double> CAnn::predict_md(int flag, string ann_name,string x_name, vector<
 
 	for(int i=0;i<n_dat;i++)
 	{
-		pre[i]/=p_save_size;
+		pre[i]/=p_save.size();
 		out.push_back(pre[i]);
 	}
 
 	return out;
 }
 
-
+				
 
 
 double CAnn::myfunc_mix(int n_neuron, double *x, const double *p)
@@ -1225,7 +1131,7 @@ double CAnn::myfunc_mix(int n_neuron, double *x, const double *p)
 	x4[1]=r2/1.4956-11.8745;
 	x4[2]=r3/1.5156-12.031;
 
-	return myfunc_neuron(10,n_neuron,x4,p4,0);
+	return myfunc_neuron(10,n_neuron,x4,p4);
 };
 
 void CAnn::evaluation_mix(const double *par, int m_dat, const void *pdata, double *fvect, int *user)
